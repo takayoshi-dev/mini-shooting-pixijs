@@ -2,6 +2,8 @@ import { Application, Assets, Sprite, Text, TextStyle } from "pixi.js";
 import { keys, initKeyboardControls } from "./keyControls";
 
 (async () => {
+  const isDevMode = import.meta.env.MODE !== "production";
+
   const app = new Application();
   await app.init({
     width: 640,
@@ -44,7 +46,7 @@ import { keys, initKeyboardControls } from "./keyControls";
   app.stage.addChild(textDebugInfo);
 
   if (!initKeyboardControls()) {
-    if (import.meta.env.Mode !== "production") {
+    if (isDevMode) {
       console.error("キーボード制御の初期化に失敗しました。");
     }
   }
@@ -76,7 +78,7 @@ import { keys, initKeyboardControls } from "./keyControls";
 
     textScore.text = `score: ${score}`;
 
-    if (import.meta.env.Mode !== "production") {
+    if (isDevMode) {
       const playerX = Math.round(player.x);
       const playerY = Math.round(player.y);
       textDebugInfo.text = `playerX: ${playerX}, playerY: ${playerY}, deltaMS: ${Math.round(deltaMS)}`;
