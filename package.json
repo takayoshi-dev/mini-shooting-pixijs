@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "fix-format": "prettier --write . && eslint --fix .",
-    "type-check": "tsc -p tsconfig.typecheck.json",
+    "type-check": "tsc",
     "unit-test": "jest",
     "build": "vite build",
     "generate-docs": "typedoc",
