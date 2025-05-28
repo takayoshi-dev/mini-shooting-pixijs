@@ -6,7 +6,7 @@ import { keys, initKeyboardControls } from "./keyControls";
   await app.init({
     width: 640,
     height: 480,
-    background: "#1099bb",
+    background: "#000000",
   });
   document.body.appendChild(app.canvas);
 
