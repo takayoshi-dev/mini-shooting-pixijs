@@ -1,14 +1,16 @@
 import { Application, Assets, Sprite, Text, TextStyle } from "pixi.js";
 import { keys, initKeyboardControls } from "./keyControls";
+import { gameConfig } from "./config/gameConfig";
+
+const isDevMode = import.meta.env.MODE !== "production";
+
+const app = new Application();
 
 (async () => {
-  const isDevMode = import.meta.env.MODE !== "production";
-
-  const app = new Application();
   await app.init({
-    width: 640,
-    height: 480,
-    background: "#000000",
+    width: gameConfig.canvas.width,
+    height: gameConfig.canvas.height,
+    background: gameConfig.canvas.backgroundColor,
   });
   document.body.appendChild(app.canvas);
 
