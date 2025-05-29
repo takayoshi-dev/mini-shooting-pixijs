@@ -21,14 +21,24 @@ import { runtimeFlags } from "./runtimeFlags";
     align: "center",
   });
 
-  let score = 0;
+  let elapsedSeconds: number = 0; // 経過時間[秒]
+  const textElapsedSec = new Text({
+    text: `TIME: ${elapsedSeconds.toFixed(2)}`,
+    style: defaultTextStyle,
+    anchor: 0.0,
+  });
+  textElapsedSec.x = 10;
+  textElapsedSec.y = 0;
+  app.stage.addChild(textElapsedSec);
+
+  let score: number = 0;
   const textScore = new Text({
-    text: `スコア: ${score}`,
+    text: `SCORE: ${score}`,
     style: defaultTextStyle,
     anchor: 0.0,
   });
   textScore.x = 10;
-  textScore.y = 10;
+  textScore.y = 20;
   app.stage.addChild(textScore);
 
   const textDebugInfo1 = new Text({
@@ -65,7 +75,7 @@ import { runtimeFlags } from "./runtimeFlags";
     spawnTimer -= deltaMS;
     if (spawnTimer < 0) {
       spawnTimer = spawnInterval;
-      score += 1;
+      // 敵出現処理
     }
 
     const playerSpeed = 180;
@@ -79,7 +89,8 @@ import { runtimeFlags } from "./runtimeFlags";
     player.x += moveX;
     player.y += moveY;
 
-    textScore.text = `score: ${score}`;
+    textElapsedSec.text = `TIME: ${elapsedSeconds.toFixed(2)}`;
+    textScore.text = `SCORE: ${score}`;
 
     if (runtimeFlags.isDevMode) {
       const playerX = Math.round(player.x);
@@ -87,6 +98,8 @@ import { runtimeFlags } from "./runtimeFlags";
       textDebugInfo1.text = `playerX: ${playerX}, playerY: ${playerY}, deltaMS: ${Math.round(deltaMS)}`;
       textDebugInfo2.text = ``;
     }
+
+    elapsedSeconds += deltaSec;
   });
 })();
 
