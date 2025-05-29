@@ -7,6 +7,9 @@ const isDevMode = import.meta.env.MODE !== "production";
 const app = new Application();
 
 (async () => {
+  console.log(navigator.userAgent);
+  console.log(window.innerWidth);
+
   await app.init({
     width: gameConfig.canvas.width,
     height: gameConfig.canvas.height,
