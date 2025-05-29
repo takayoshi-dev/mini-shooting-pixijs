@@ -10,4 +10,12 @@ body {
 
 canvas {
   display: block;
+  border: 1px solid black;
+  margin: auto;
+}
+
+@media screen and (max-width: 700px) {
+  canvas#gameView {
+    width: 98%;
+  }
 }

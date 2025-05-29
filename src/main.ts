@@ -1,19 +1,10 @@
 import { Application, Assets, Sprite, Text, TextStyle } from "pixi.js";
 import { keys, initKeyboardControls } from "./keyControls";
 import { gameConfig } from "./config/gameConfig";
-
-const isDevMode = import.meta.env.MODE !== "production";
-
-const userAgent = navigator.userAgent;
-const innerWidth = window.innerWidth;
-const app = new Application();
+import { runtimeFlags } from "./runtimeFlags";
 
 (async () => {
-  await app.init({
-    width: gameConfig.canvas.width,
-    height: gameConfig.canvas.height,
-    background: gameConfig.canvas.backgroundColor,
-  });
+  const app = await createApplication();
   document.body.appendChild(app.canvas);
 
   const texture = await Assets.load("assets/plane_blue.png");
@@ -59,7 +50,7 @@ const app = new Application();
   app.stage.addChild(textDebugInfo2);
 
   if (!initKeyboardControls()) {
-    if (isDevMode) {
+    if (runtimeFlags.isDevMode) {
       console.error("キーボード制御の初期化に失敗しました。");
     }
   }
@@ -68,7 +59,6 @@ const app = new Application();
   let spawnTimer = spawnInterval; // 敵出現経過時間
 
   app.ticker.add((time) => {
-    //player.rotation += 0.1 * time.deltaTime;
     const deltaMS = time.deltaMS;
     const deltaSec = deltaMS / 1000;
 
@@ -91,12 +81,37 @@ const app = new Application();
 
     textScore.text = `score: ${score}`;
 
-    if (isDevMode) {
+    if (runtimeFlags.isDevMode) {
       const playerX = Math.round(player.x);
       const playerY = Math.round(player.y);
       textDebugInfo1.text = `playerX: ${playerX}, playerY: ${playerY}, deltaMS: ${Math.round(deltaMS)}`;
-      textDebugInfo2.text =
-        `innerWidth: ${innerWidth}, userAgent: ` + userAgent;
+      textDebugInfo2.text = ``;
     }
   });
 })();
+
+/**
+ * PixiJSアプリケーションを初期化し、設定済みのcanvasを返します。
+ *
+ * @returns {Promise<Application>} 初期化された PixiJS の Application インスタンス
+ * @throws 初期化に失敗した場合、エラーをスローします
+ */
+async function createApplication(): Promise<Application> {
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute("id", gameConfig.canvas.id);
+    const app = new Application();
+    await app.init({
+      canvas: canvas,
+      width: gameConfig.canvas.width,
+      height: gameConfig.canvas.height,
+      background: gameConfig.canvas.backgroundColor,
+    });
+    return app;
+  } catch (e) {
+    if (runtimeFlags.isDevMode) {
+      console.error("アプリケーション初期化に失敗:", e);
+    }
+    throw e;
+  }
+}
