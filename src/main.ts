@@ -4,12 +4,11 @@ import { gameConfig } from "./config/gameConfig";
 
 const isDevMode = import.meta.env.MODE !== "production";
 
+const userAgent = navigator.userAgent;
+const innerWidth = window.innerWidth;
 const app = new Application();
 
 (async () => {
-  console.log(navigator.userAgent);
-  console.log(window.innerWidth);
-
   await app.init({
     width: gameConfig.canvas.width,
     height: gameConfig.canvas.height,
@@ -41,14 +40,23 @@ const app = new Application();
   textScore.y = 10;
   app.stage.addChild(textScore);
 
-  const textDebugInfo = new Text({
+  const textDebugInfo1 = new Text({
     text: "",
     style: defaultTextStyle,
     anchor: 0.0,
   });
-  textDebugInfo.x = app.screen.width / 2 + 100;
-  textDebugInfo.y = 0;
-  app.stage.addChild(textDebugInfo);
+  textDebugInfo1.x = app.screen.width / 2 + 100;
+  textDebugInfo1.y = 0;
+  app.stage.addChild(textDebugInfo1);
+
+  const textDebugInfo2 = new Text({
+    text: "",
+    style: defaultTextStyle,
+    anchor: 0.0,
+  });
+  textDebugInfo2.x = 0;
+  textDebugInfo2.y = app.screen.height - 50;
+  app.stage.addChild(textDebugInfo2);
 
   if (!initKeyboardControls()) {
     if (isDevMode) {
@@ -86,7 +94,9 @@ const app = new Application();
     if (isDevMode) {
       const playerX = Math.round(player.x);
       const playerY = Math.round(player.y);
-      textDebugInfo.text = `playerX: ${playerX}, playerY: ${playerY}, deltaMS: ${Math.round(deltaMS)}`;
+      textDebugInfo1.text = `playerX: ${playerX}, playerY: ${playerY}, deltaMS: ${Math.round(deltaMS)}`;
+      textDebugInfo2.text =
+        `innerWidth: ${innerWidth}, userAgent: ` + userAgent;
     }
   });
 })();
