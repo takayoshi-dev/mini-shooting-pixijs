@@ -3,5 +3,5 @@ export const keyBindings = {
   down: ["ArrowDown", "s"],
   left: ["ArrowLeft", "a"],
   right: ["ArrowRight", "d"],
-  fire: [],
+  fire: ["Space"],
 };
