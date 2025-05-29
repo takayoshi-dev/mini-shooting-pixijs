@@ -1,17 +1,17 @@
-# mini-shooting-pixijs
+## 概要
 
 PixiJS + TypeScript + Vite によって構築された、ブラウザ向けの2Dシューティングゲームです。
 
 ## 🎮 デモ
 
-GitHub Pages 上でプレイできます。お時間ある時にぜひお試しください：  
+GitHub Pages 上でプレイできます。  
 📌 [https://takayoshi-dev.github.io/mini-shooting-pixijs/](https://takayoshi-dev.github.io/mini-shooting-pixijs/)
 
 ## 📁 プロジェクト構成
 
 | 項目                 | 内容                                                   |
 | -------------------- | ------------------------------------------------------ |
-| OS                   | Windows                                                |
+| OS                   | Windows10                                              |
 | エディタ             | Visual Studio Code                                     |
 | 使用言語             | TypeScript                                             |
 | 描画ライブラリ       | PixiJS（WebGLベースの2Dレンダリング）                  |
