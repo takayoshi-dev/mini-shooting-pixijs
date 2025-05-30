@@ -2,13 +2,17 @@ import { Application, Assets, Sprite, Text, TextStyle } from "pixi.js";
 import { keys, initKeyboardControls } from "./keyControls";
 import { gameConfig } from "./config/gameConfig";
 import { runtimeFlags } from "./runtimeFlags";
+import { assetManifest } from "./manifest/assetManifest";
 
 (async () => {
   const app = await createApplication();
   document.body.appendChild(app.canvas);
 
-  const texture = await Assets.load("assets/plane_blue.png");
-  const player = new Sprite(texture);
+  await Assets.init({ manifest: assetManifest });
+  Assets.backgroundLoadBundle(["load-screen", "game-screen"]);
+
+  const gameScreenAssets = await Assets.loadBundle("game-screen");
+  const player = new Sprite(gameScreenAssets.planeSilver);
   app.stage.addChild(player);
   player.anchor.set(0.5);
   player.x = app.screen.width / 2;
@@ -21,14 +25,24 @@ import { runtimeFlags } from "./runtimeFlags";
     align: "center",
   });
 
-  let score = 0;
+  let elapsedSeconds: number = 0; // 経過時間[秒]
+  const textElapsedSec = new Text({
+    text: `TIME: ${elapsedSeconds.toFixed(2)}`,
+    style: defaultTextStyle,
+    anchor: 0.0,
+  });
+  textElapsedSec.x = 10;
+  textElapsedSec.y = 0;
+  app.stage.addChild(textElapsedSec);
+
+  const score: number = 0;
   const textScore = new Text({
-    text: `スコア: ${score}`,
+    text: `SCORE: ${score}`,
     style: defaultTextStyle,
     anchor: 0.0,
   });
   textScore.x = 10;
-  textScore.y = 10;
+  textScore.y = 20;
   app.stage.addChild(textScore);
 
   const textDebugInfo1 = new Text({
@@ -65,7 +79,7 @@ import { runtimeFlags } from "./runtimeFlags";
     spawnTimer -= deltaMS;
     if (spawnTimer < 0) {
       spawnTimer = spawnInterval;
-      score += 1;
+      // 敵出現処理
     }
 
     const playerSpeed = 180;
@@ -79,7 +93,8 @@ import { runtimeFlags } from "./runtimeFlags";
     player.x += moveX;
     player.y += moveY;
 
-    textScore.text = `score: ${score}`;
+    textElapsedSec.text = `TIME: ${elapsedSeconds.toFixed(2)}`;
+    textScore.text = `SCORE: ${score}`;
 
     if (runtimeFlags.isDevMode) {
       const playerX = Math.round(player.x);
@@ -87,6 +102,8 @@ import { runtimeFlags } from "./runtimeFlags";
       textDebugInfo1.text = `playerX: ${playerX}, playerY: ${playerY}, deltaMS: ${Math.round(deltaMS)}`;
       textDebugInfo2.text = ``;
     }
+
+    elapsedSeconds += deltaSec;
   });
 })();
 
