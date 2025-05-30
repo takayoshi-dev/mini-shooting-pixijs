@@ -2,13 +2,17 @@ import { Application, Assets, Sprite, Text, TextStyle } from "pixi.js";
 import { keys, initKeyboardControls } from "./keyControls";
 import { gameConfig } from "./config/gameConfig";
 import { runtimeFlags } from "./runtimeFlags";
+import { assetManifest } from "./manifest/assetManifest";
 
 (async () => {
   const app = await createApplication();
   document.body.appendChild(app.canvas);
 
-  const texture = await Assets.load("assets/plane_blue.png");
-  const player = new Sprite(texture);
+  await Assets.init({ manifest: assetManifest });
+  Assets.backgroundLoadBundle(["load-screen", "game-screen"]);
+
+  const gameScreenAssets = await Assets.loadBundle("game-screen");
+  const player = new Sprite(gameScreenAssets.planeSilver);
   app.stage.addChild(player);
   player.anchor.set(0.5);
   player.x = app.screen.width / 2;
@@ -31,7 +35,7 @@ import { runtimeFlags } from "./runtimeFlags";
   textElapsedSec.y = 0;
   app.stage.addChild(textElapsedSec);
 
-  let score: number = 0;
+  const score: number = 0;
   const textScore = new Text({
     text: `SCORE: ${score}`,
     style: defaultTextStyle,
