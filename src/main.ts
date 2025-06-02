@@ -1,8 +1,9 @@
-import { Application, Assets, Sprite, Text, TextStyle } from "pixi.js";
+import { Application, Assets, Sprite } from "pixi.js";
 import { keys, initKeyboardControls } from "./keyControls";
 import { gameConfig } from "./config/gameConfig";
 import { runtimeFlags } from "./runtimeFlags";
 import { assetManifest } from "./manifest/assetManifest";
+import { TextManager } from "./TextManager";
 
 (async () => {
   const app = await createApplication();
@@ -18,56 +19,16 @@ import { assetManifest } from "./manifest/assetManifest";
   player.x = app.screen.width / 2;
   player.y = app.screen.height / 2;
 
-  const defaultTextStyle = new TextStyle({
-    fontFamily: "Arial",
-    fontSize: 12,
-    fill: 0xffffff,
-    align: "center",
-  });
-
-  let elapsedSeconds: number = 0; // 経過時間[秒]
-  const textElapsedSec = new Text({
-    text: `TIME: ${elapsedSeconds.toFixed(2)}`,
-    style: defaultTextStyle,
-    anchor: 0.0,
-  });
-  textElapsedSec.x = 10;
-  textElapsedSec.y = 0;
-  app.stage.addChild(textElapsedSec);
-
-  const score: number = 0;
-  const textScore = new Text({
-    text: `SCORE: ${score}`,
-    style: defaultTextStyle,
-    anchor: 0.0,
-  });
-  textScore.x = 10;
-  textScore.y = 20;
-  app.stage.addChild(textScore);
-
-  const textDebugInfo1 = new Text({
-    text: "",
-    style: defaultTextStyle,
-    anchor: 0.0,
-  });
-  textDebugInfo1.x = app.screen.width / 2 + 100;
-  textDebugInfo1.y = 0;
-  app.stage.addChild(textDebugInfo1);
-
-  const textDebugInfo2 = new Text({
-    text: "",
-    style: defaultTextStyle,
-    anchor: 0.0,
-  });
-  textDebugInfo2.x = 0;
-  textDebugInfo2.y = app.screen.height - 50;
-  app.stage.addChild(textDebugInfo2);
+  const textManager = new TextManager(app.stage);
 
   if (!initKeyboardControls()) {
     if (runtimeFlags.isDevMode) {
       console.error("キーボード制御の初期化に失敗しました。");
     }
   }
+
+  let elapsedSeconds: number = 0; // 経過時間[秒]
+  let score: number = 0;
 
   const spawnInterval = 1000; // 1秒(1000ms)ごとに敵出現
   let spawnTimer = spawnInterval; // 敵出現経過時間
@@ -77,31 +38,38 @@ import { assetManifest } from "./manifest/assetManifest";
     const deltaSec = deltaMS / 1000;
 
     spawnTimer -= deltaMS;
-    if (spawnTimer < 0) {
+    if (spawnTimer <= 0) {
       spawnTimer = spawnInterval;
       // 敵出現処理
+      score += 1;
     }
 
     const playerSpeed = 180;
     let moveX = 0;
     let moveY = 0;
 
-    if (keys.up) moveY -= playerSpeed * deltaSec;
-    if (keys.down) moveY += playerSpeed * deltaSec;
-    if (keys.left) moveX -= playerSpeed * deltaSec;
-    if (keys.right) moveX += playerSpeed * deltaSec;
+    if (keys.up) {
+      moveY -= playerSpeed * deltaSec;
+    }
+    if (keys.down) {
+      moveY += playerSpeed * deltaSec;
+    }
+    if (keys.left) {
+      moveX -= playerSpeed * deltaSec;
+    }
+    if (keys.right) {
+      moveX += playerSpeed * deltaSec;
+    }
     player.x += moveX;
     player.y += moveY;
 
-    textElapsedSec.text = `TIME: ${elapsedSeconds.toFixed(2)}`;
-    textScore.text = `SCORE: ${score}`;
-
-    if (runtimeFlags.isDevMode) {
-      const playerX = Math.round(player.x);
-      const playerY = Math.round(player.y);
-      textDebugInfo1.text = `playerX: ${playerX}, playerY: ${playerY}, deltaMS: ${Math.round(deltaMS)}`;
-      textDebugInfo2.text = ``;
-    }
+    textManager.updateText({
+      score: score,
+      playerX: Math.round(player.x),
+      playerY: Math.round(player.y),
+      deltaMS: Math.round(deltaMS),
+      elapsedTime: elapsedSeconds,
+    });
 
     elapsedSeconds += deltaSec;
   });
@@ -113,7 +81,7 @@ import { assetManifest } from "./manifest/assetManifest";
  * @returns {Promise<Application>} 初期化された PixiJS の Application インスタンス
  * @throws 初期化に失敗した場合、エラーをスローします
  */
-async function createApplication(): Promise<Application> {
+export async function createApplication(): Promise<Application> {
   try {
     const canvas = document.createElement("canvas");
     canvas.setAttribute("id", gameConfig.canvas.id);
