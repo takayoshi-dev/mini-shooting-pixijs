@@ -1,23 +1,10 @@
 import { Container } from "pixi.js";
 import { TextManager } from "../src/TextManager";
 
-jest.mock("../src/runtimeFlags", () => ({
-  runtimeFlags: { isDevMode: true },
-}));
-
 describe("TextManager", () => {
-  let textManager: TextManager;
-
-  beforeEach(() => {
-    const container = new Container();
-    textManager = new TextManager(container);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("スコアと経過時間が更新されるべき", () => {
+    const container = new Container();
+    const textManager = new TextManager(container, true);
     textManager.updateText({
       score: 42,
       elapsedTime: 12.5,
@@ -28,6 +15,8 @@ describe("TextManager", () => {
   });
 
   it("開発モードのとき、プレイヤーの位置とデルタ時間が更新されるべき", () => {
+    const container = new Container();
+    const textManager = new TextManager(container, true);
     textManager.updateText({
       playerX: 100,
       playerY: 200,
@@ -39,7 +28,23 @@ describe("TextManager", () => {
     expect(textManager.deltaTimeText.displayDeltaMS).toBe(16);
   });
 
+  it("非開発モードのとき、プレイヤーの位置とデルタ時間が非表示にされるべき", () => {
+    const container = new Container();
+    const textManager = new TextManager(container, false);
+
+    textManager.updateText({
+      playerX: 100,
+      playerY: 200,
+      deltaMS: 16,
+    });
+
+    expect(textManager.playerPositionText.destroyed).toBe(true);
+    expect(textManager.deltaTimeText.destroyed).toBe(true);
+  });
+
   it("データの一部だけが提供されたときでもエラーを出さないべき", () => {
+    const container = new Container();
+    const textManager = new TextManager(container, true);
     expect(() =>
       textManager.updateText({
         score: 99,

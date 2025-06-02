@@ -1,12 +1,17 @@
-import { Application, Assets, Sprite } from "pixi.js";
+import { Application, Assets, Sprite, isMobile } from "pixi.js";
 import { keys, initKeyboardControls } from "./keyControls";
 import { gameConfig } from "./config/gameConfig";
-import { runtimeFlags } from "./runtimeFlags";
 import { assetManifest } from "./manifest/assetManifest";
 import { TextManager } from "./TextManager";
+import type { RuntimeFlags } from "./types";
 
 (async () => {
-  const app = await createApplication();
+  const runtimeFlags: RuntimeFlags = {
+    isDevMode: import.meta.env.MODE !== "production",
+    isMobile: isMobile.any,
+  };
+
+  const app = await createApplication(runtimeFlags);
   document.body.appendChild(app.canvas);
 
   await Assets.init({ manifest: assetManifest });
@@ -19,7 +24,7 @@ import { TextManager } from "./TextManager";
   player.x = app.screen.width / 2;
   player.y = app.screen.height / 2;
 
-  const textManager = new TextManager(app.stage);
+  const textManager = new TextManager(app.stage, runtimeFlags.isDevMode);
 
   if (!initKeyboardControls()) {
     if (runtimeFlags.isDevMode) {
@@ -78,10 +83,13 @@ import { TextManager } from "./TextManager";
 /**
  * PixiJSアプリケーションを初期化し、設定済みのcanvasを返します。
  *
+ * @param runtimeFlags 実行時フラグ（開発モードやモバイル判定など）
  * @returns {Promise<Application>} 初期化された PixiJS の Application インスタンス
  * @throws 初期化に失敗した場合、エラーをスローします
  */
-export async function createApplication(): Promise<Application> {
+async function createApplication(
+  runtimeFlags: RuntimeFlags,
+): Promise<Application> {
   try {
     const canvas = document.createElement("canvas");
     canvas.setAttribute("id", gameConfig.canvas.id);
