@@ -6,21 +6,8 @@ import {
   DeltaTimeText,
   PlayerPositionText,
 } from "./text";
-import { runtimeFlags } from "./runtimeFlags";
 import { gameConfig } from "./config/gameConfig";
-
-/**
- * テキスト表示内容の更新に必要なデータ構造。
- *
- * 各値はオプションで、必要な項目のみ更新可能。
- */
-interface TextUpdateParams {
-  score: number;
-  playerX: number;
-  playerY: number;
-  deltaMS: number;
-  elapsedTime: number;
-}
+import type { TextUpdateParams } from "./types";
 
 /**
  * テキストを一括管理するクラス
@@ -35,8 +22,9 @@ export class TextManager {
    * コンストラクタ
    *
    * @param container テキストを追加する PixiJS のコンテナ
+   * @param isDevMode 開発モードかどうか（true の場合、デバッグ用のテキストを表示）
    */
-  constructor(container: Container<ContainerChild>) {
+  constructor(container: Container<ContainerChild>, isDevMode: boolean) {
     this._elapsedTimeText = new ElapsedTimeText(10, 0);
     container.addChild(this._elapsedTimeText);
 
@@ -54,6 +42,11 @@ export class TextManager {
       20,
     );
     container.addChild(this._deltaTimeText);
+
+    if (!isDevMode) {
+      this._playerPositionText.destroy();
+      this._deltaTimeText.destroy();
+    }
   }
 
   /**
@@ -90,25 +83,31 @@ export class TextManager {
    * @param data テキスト表示内容の更新に必要なデータ
    */
   public updateText(data: Partial<TextUpdateParams>): void {
-    if (data.elapsedTime !== undefined) {
-      this.elapsedTimeText.displayTime = data.elapsedTime;
+    if (!this._elapsedTimeText.destroyed) {
+      if (data.elapsedTime !== undefined) {
+        this._elapsedTimeText.displayTime = data.elapsedTime;
+      }
     }
 
-    if (data.score !== undefined) {
-      this.scoreText.displayScore = data.score;
+    if (!this._scoreText.destroyed) {
+      if (data.score !== undefined) {
+        this._scoreText.displayScore = data.score;
+      }
     }
 
-    if (runtimeFlags.isDevMode) {
+    if (!this._playerPositionText.destroyed) {
       if (data.playerX !== undefined) {
-        this.playerPositionText.displayPlayerX = data.playerX;
+        this._playerPositionText.displayPlayerX = data.playerX;
       }
 
       if (data.playerY !== undefined) {
-        this.playerPositionText.displayPlayerY = data.playerY;
+        this._playerPositionText.displayPlayerY = data.playerY;
       }
+    }
 
+    if (!this._deltaTimeText.destroyed) {
       if (data.deltaMS !== undefined) {
-        this.deltaTimeText.displayDeltaMS = data.deltaMS;
+        this._deltaTimeText.displayDeltaMS = data.deltaMS;
       }
     }
   }
