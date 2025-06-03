@@ -1,4 +1,5 @@
 import { DefaultText } from "./DefaultText";
+import { textMessagesConfig } from "../config";
 
 /**
  * スコア表示用のテキストクラス。
@@ -63,6 +64,6 @@ export class ScoreText extends DefaultText {
    * @override
    */
   override updateDisplay(): void {
-    this.text = `SCORE: ${this._displayScore}`;
+    this.text = textMessagesConfig.score(this._displayScore);
   }
 }

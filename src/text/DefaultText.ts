@@ -1,5 +1,6 @@
-import { Text, TextStyle } from "pixi.js";
+import { Text } from "pixi.js";
 import type { TextOptions } from "pixi.js";
+import { textStyleConfig } from "../config";
 
 /**
  * 共通のスタイルと配置指定を持つ、基本的なテキストクラス。
@@ -11,12 +12,7 @@ export class DefaultText extends Text {
   /**
    * デフォルトのテキストスタイル（全テキスト共通）
    */
-  private static readonly defaultTextStyle = new TextStyle({
-    fontFamily: "Arial",
-    fontSize: 12,
-    fill: 0xffffff,
-    align: "center",
-  });
+  private static readonly defaultTextStyle = textStyleConfig.default;
 
   /**
    * コンストラクタ

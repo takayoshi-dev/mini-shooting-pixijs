@@ -1,4 +1,5 @@
 import { DefaultText } from "./DefaultText";
+import { textMessagesConfig } from "../config";
 
 /**
  * フレーム間の経過時間（デルタタイム）を表示するテキストクラス。
@@ -63,6 +64,6 @@ export class DeltaTimeText extends DefaultText {
    * @override
    */
   override updateDisplay(): void {
-    this.text = `deltaMS: ${this._displayDeltaMS}`;
+    this.text = textMessagesConfig.deltaTime(this._displayDeltaMS);
   }
 }
