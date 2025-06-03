@@ -1,4 +1,5 @@
 import { DefaultText } from "./DefaultText";
+import { textMessagesConfig } from "../config";
 
 /**
  * 経過時間を表示するテキストクラス。
@@ -42,6 +43,6 @@ export class ElapsedTimeText extends DefaultText {
    * @override
    */
   override updateDisplay(): void {
-    this.text = `TIME: ${this._displayTime.toFixed(2)}`;
+    this.text = textMessagesConfig.elapsedTime(this._displayTime);
   }
 }

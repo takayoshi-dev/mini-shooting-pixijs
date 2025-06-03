@@ -1,4 +1,5 @@
 import { DefaultText } from "./DefaultText";
+import { textMessagesConfig } from "../config";
 
 /**
  * プレイヤーの座標（X, Y）を表示するテキストクラス。
@@ -63,6 +64,9 @@ export class PlayerPositionText extends DefaultText {
    * @override
    */
   override updateDisplay(): void {
-    this.text = `playerX: ${this._displayPlayerX}, playerY: ${this._displayPlayerY}`;
+    this.text = textMessagesConfig.playerPosition(
+      this._displayPlayerX,
+      this._displayPlayerY,
+    );
   }
 }
