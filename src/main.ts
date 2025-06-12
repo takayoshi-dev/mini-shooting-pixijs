@@ -1,10 +1,12 @@
-import { Application, Assets, Sprite, isMobile } from "pixi.js";
+import { Application, Assets, isMobile } from "pixi.js";
 import type { Renderer } from "pixi.js";
 import { keys, initKeyboardControls } from "./keyControls";
 import { gameConfig } from "./config/gameConfig";
 import { assetManifest } from "./manifest/assetManifest";
 import { TextManager } from "./TextManager";
 import type { RuntimeFlags } from "./types";
+import { PlayerPlane } from "./PlayerPlane";
+import { EnemyPlane } from "./EnemyPlane";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {
@@ -71,20 +73,25 @@ async function startGame(
   try {
     const mainContainer = app.stage;
     const gameScreenAssets = await Assets.loadBundle("game-screen");
-    const player = new Sprite(gameScreenAssets.planeBlue);
+    const player = new PlayerPlane(
+      app.screen.width / 2,
+      app.screen.height / 2,
+      180,
+      gameScreenAssets.planeBlue,
+    );
     mainContainer.addChild(player);
-    player.anchor.set(0.5);
-    player.x = app.screen.width / 2;
-    player.y = app.screen.height / 2;
+
+    const enemyPlanes = new Set<EnemyPlane>();
 
     const textManager = new TextManager(mainContainer, runtimeFlags.isDevMode);
 
     let elapsedSeconds: number = 0; // 経過時間[秒]
-    let score: number = 0;
+    const score: number = 0;
 
     const spawnInterval = 1000; // 1秒(1000ms)ごとに敵出現
     let spawnTimer = spawnInterval; // 敵出現経過時間
 
+    const scoreSpeedRate = 1 / 500.0;
     app.ticker.add((time) => {
       const deltaMS = time.deltaMS;
       const deltaSec = deltaMS / 1000;
@@ -93,27 +100,51 @@ async function startGame(
       if (spawnTimer <= 0) {
         spawnTimer = spawnInterval;
         // 敵出現処理
-        score += 1;
+        const enemyPlane = new EnemyPlane(
+          app.screen.width / 2,
+          0,
+          50,
+          gameScreenAssets.planeBlue,
+        );
+        mainContainer.addChild(enemyPlane);
+        enemyPlanes.add(enemyPlane);
       }
-
-      const playerSpeed = 180;
-      let moveX = 0;
-      let moveY = 0;
 
       if (keys.up) {
-        moveY -= playerSpeed * deltaSec;
+        player.moveUp(deltaMS, score * scoreSpeedRate);
       }
       if (keys.down) {
-        moveY += playerSpeed * deltaSec;
+        player.moveDown(deltaMS, score * scoreSpeedRate);
       }
       if (keys.left) {
-        moveX -= playerSpeed * deltaSec;
+        player.moveLeft(deltaMS, score * scoreSpeedRate);
+        /*
+        player.angle -= 1;
+        player.spriteAngle = player.angle;
+        */
       }
       if (keys.right) {
-        moveX += playerSpeed * deltaSec;
+        player.moveRight(deltaMS, score * scoreSpeedRate);
+        /*
+        player.angle += 1;
+        player.spriteAngle = player.angle;
+        */
       }
-      player.x += moveX;
-      player.y += moveY;
+
+      const pendingRemovalEnemies = new Set<EnemyPlane>();
+      enemyPlanes.forEach((enemy) => {
+        enemy.moveUp(deltaMS, score * scoreSpeedRate);
+        if (enemy.y > app.screen.height) {
+          pendingRemovalEnemies.add(enemy);
+        }
+      });
+      if (pendingRemovalEnemies.size > 0) {
+        pendingRemovalEnemies.forEach((enemy) => {
+          enemyPlanes.delete(enemy);
+          enemy.releaseResources();
+        });
+        pendingRemovalEnemies.clear();
+      }
 
       textManager.updateText({
         score: score,
@@ -121,6 +152,7 @@ async function startGame(
         playerY: Math.round(player.y),
         deltaMS: Math.round(deltaMS),
         elapsedTime: elapsedSeconds,
+        angle: player.angle,
       });
 
       elapsedSeconds += deltaSec;

@@ -18,4 +18,6 @@ export interface TextUpdateParams {
 
   /** ゲーム開始からの累積経過時間（秒） */
   elapsedTime: number;
+
+  angle: number;
 }
