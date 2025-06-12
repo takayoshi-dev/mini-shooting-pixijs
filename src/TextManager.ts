@@ -103,6 +103,9 @@ export class TextManager {
       if (data.playerY !== undefined) {
         this._playerPositionText.displayPlayerY = data.playerY;
       }
+      if (data.angle !== undefined) {
+        this._playerPositionText.angle = data.angle;
+      }
     }
 
     if (!this._deltaTimeText.destroyed) {
