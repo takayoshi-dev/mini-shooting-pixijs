@@ -1,5 +1,4 @@
-import { Container } from "pixi.js";
-import type { ContainerChild } from "pixi.js";
+import type { Container } from "pixi.js";
 import {
   ScoreText,
   ElapsedTimeText,
@@ -24,7 +23,7 @@ export class TextManager {
    * @param container テキストを追加する PixiJS のコンテナ
    * @param isDevMode 開発モードかどうか（true の場合、デバッグ用のテキストを表示）
    */
-  constructor(container: Container<ContainerChild> | null, isDevMode: boolean) {
+  constructor(container: Container, isDevMode: boolean) {
     this._elapsedTimeText = new ElapsedTimeText(10, 0);
 
     this._scoreText = new ScoreText(10, 20);
@@ -39,12 +38,10 @@ export class TextManager {
       20,
     );
 
-    if (container != null) {
-      container.addChild(this._elapsedTimeText);
-      container.addChild(this._scoreText);
-      container.addChild(this._playerPositionText);
-      container.addChild(this._deltaTimeText);
-    }
+    container.addChild(this._elapsedTimeText);
+    container.addChild(this._scoreText);
+    container.addChild(this._playerPositionText);
+    container.addChild(this._deltaTimeText);
 
     if (!isDevMode) {
       this._playerPositionText.destroy();

@@ -8,7 +8,6 @@ import type { RuntimeFlags } from "./types";
 import { PlayerPlane } from "./PlayerPlane";
 import { EnemyPlane } from "./EnemyPlane";
 import { LayerManager } from "./LayerManager";
-import { LayerType } from "./constants/LayerType";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {
@@ -87,10 +86,7 @@ async function startGame(
 
     const enemyPlanes = new Set<EnemyPlane>();
 
-    const textManager = new TextManager(
-      layerManager.getLayer(LayerType.UI),
-      runtimeFlags.isDevMode,
-    );
+    const textManager = new TextManager(mainContainer, runtimeFlags.isDevMode);
 
     let elapsedSeconds: number = 0; // 経過時間[秒]
     const score: number = 0;
