@@ -16,9 +16,10 @@ GitHub Pages 上でプレイできます。
 | 使用言語             | TypeScript                                             |
 | 描画ライブラリ       | PixiJS（WebGLベースの2Dレンダリング）                  |
 | ビルドツール         | Vite（開発サーバーとビルド機能）                       |
-| 単体テスト           | Jest + ts-jest                                         |
+| 単体テスト           | Vitest                                                 |
 | ドキュメント生成     | TypeDoc（JSDocコメントからHTMLドキュメントを自動生成） |
 | コードチェック・整形 | ESLint（構文チェック） + Prettier（自動フォーマット）  |
+| パッケージ管理       | npm（Node.js標準のパッケージ管理ツール）               |
 | 公開先               | GitHub Pages（GitHub Actions による自動デプロイ）      |
 
 ## 🚀 セットアップ
