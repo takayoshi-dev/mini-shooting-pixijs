@@ -7,6 +7,10 @@ PixiJS + TypeScript + Vite によって構築された、ブラウザ向けの2D
 GitHub Pages 上でプレイできます。  
 📌 [https://takayoshi-dev.github.io/mini-shooting-pixijs/](https://takayoshi-dev.github.io/mini-shooting-pixijs/)
 
+## 📖 APIドキュメント
+
+[👉 TypeDoc で生成されたドキュメントはこちら](./docs/index.html)
+
 ## 📁 プロジェクト構成
 
 | 項目                 | 内容                                                   |
