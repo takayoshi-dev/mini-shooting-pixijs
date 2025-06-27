@@ -9,7 +9,7 @@ GitHub Pages 上でプレイできます。
 
 ## 📖 APIドキュメント
 
-[👉 TypeDoc で生成されたドキュメントはこちら](./docs/index.html)
+👉 [https://takayoshi-dev.github.io/mini-shooting-pixijs/docs/index.html](https://takayoshi-dev.github.io/mini-shooting-pixijs/docs/index.html)
 
 ## 📁 プロジェクト構成
 
