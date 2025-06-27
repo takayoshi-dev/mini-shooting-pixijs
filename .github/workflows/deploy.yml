@@ -37,6 +37,9 @@ jobs:
       - name: Generate TypeDoc documentation
         run: npm run generate-docs
 
+      - name: Copy docs to dist
+        run: cp -r docs dist/docs
+
       - name: Build
         run: npm run build
 
