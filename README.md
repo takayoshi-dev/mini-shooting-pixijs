@@ -47,3 +47,7 @@ npm run generate-docs
 # 開発用サーバー起動
 npm run dev
 ```
+
+## 📜 更新履歴
+
+詳しくは [CHANGELOG.md](./CHANGELOG.md) をご覧ください。
