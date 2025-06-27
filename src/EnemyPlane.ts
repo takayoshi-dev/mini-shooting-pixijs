@@ -1,7 +1,7 @@
 import { Point, Graphics } from "pixi.js";
-import { Plane } from "./Plane";
-import { VectorUtils } from "./VectorUtils";
-import { LayerType } from "./constants/LayerType";
+import { Plane } from "@/Plane";
+import { VectorUtils } from "@/VectorUtils";
+import { LayerType } from "@/constants/LayerType";
 
 /**
  * 敵機を表すクラス

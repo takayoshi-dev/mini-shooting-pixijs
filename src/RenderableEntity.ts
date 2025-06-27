@@ -1,7 +1,7 @@
 import { Container, Point } from "pixi.js";
-import { LayerType } from "./constants/LayerType";
-import { VectorUtils } from "./VectorUtils";
-import { Vector2 } from "./Vector2";
+import { LayerType } from "@/constants/LayerType";
+import { VectorUtils } from "@/VectorUtils";
+import { Vector2 } from "@/Vector2";
 
 /**
  * エンティティの抽象基底クラス

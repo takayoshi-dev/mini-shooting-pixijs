@@ -1,9 +1,9 @@
 import { Point } from "pixi.js";
 
-import { AngleUtils } from "./AngleUtils";
+import { AngleUtils } from "@/AngleUtils";
 
-import { RenderableEntity } from "./RenderableEntity";
-import { LayerType } from "./constants/LayerType";
+import { RenderableEntity } from "@/RenderableEntity";
+import { LayerType } from "@/constants/LayerType";
 
 /**
  * 汎用的な飛行機オブジェクトを表す基底クラス

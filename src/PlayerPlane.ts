@@ -1,6 +1,6 @@
 import { Sprite, Texture, Point } from "pixi.js";
-import { Plane } from "./Plane";
-import { LayerType } from "./constants/LayerType";
+import { Plane } from "@/Plane";
+import { LayerType } from "@/constants/LayerType";
 
 /**
  * プレイヤー用の飛行機クラス

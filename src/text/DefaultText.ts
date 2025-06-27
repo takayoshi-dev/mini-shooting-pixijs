@@ -1,6 +1,6 @@
 import { Text } from "pixi.js";
 import type { TextOptions } from "pixi.js";
-import { textStyleConfig } from "../config";
+import { textStyleConfig } from "@/config";
 
 /**
  * 共通のスタイルと配置指定を持つ、基本的なテキストクラス。

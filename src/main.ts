@@ -1,13 +1,13 @@
 import { Application, Assets, isMobile } from "pixi.js";
 import type { Renderer } from "pixi.js";
-import { keys, initKeyboardControls } from "./keyControls";
-import { gameConfig } from "./config/gameConfig";
-import { assetManifest } from "./manifest/assetManifest";
-import { TextManager } from "./TextManager";
-import type { RuntimeFlags } from "./types";
-import { PlayerPlane } from "./PlayerPlane";
-import { EnemyPlane } from "./EnemyPlane";
-import { LayerManager } from "./LayerManager";
+import { keys, initKeyboardControls } from "@/keyControls";
+import { gameConfig } from "@/config/gameConfig";
+import { assetManifest } from "@/manifest/assetManifest";
+import { TextManager } from "@/TextManager";
+import type { RuntimeFlags } from "@/types";
+import { PlayerPlane } from "@/PlayerPlane";
+import { EnemyPlane } from "@/EnemyPlane";
+import { LayerManager } from "@/LayerManager";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {

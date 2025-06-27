@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
-import { LayerType } from "./constants/LayerType";
-import { RenderableEntity } from "./RenderableEntity";
-import { Layer } from "./Layer";
+import { LayerType } from "@/constants/LayerType";
+import { RenderableEntity } from "@/RenderableEntity";
+import { Layer } from "@/Layer";
 import type { ContainerChild } from "pixi.js";
 
 /**

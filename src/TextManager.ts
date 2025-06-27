@@ -5,8 +5,8 @@ import {
   DeltaTimeText,
   PlayerPositionText,
 } from "./text";
-import { gameConfig } from "./config/gameConfig";
-import type { TextUpdateParams } from "./types";
+import { gameConfig } from "@/config/gameConfig";
+import type { TextUpdateParams } from "@/types";
 
 /**
  * テキストを一括管理するクラス
