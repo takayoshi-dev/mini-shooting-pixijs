@@ -1,4 +1,4 @@
-import { keyBindings } from "./config/keyConfig";
+import { keyBindings } from "@/config/keyConfig";
 
 type KeyEventType = "keydown" | "keyup";
 type ListenerEntry = {

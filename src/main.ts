@@ -1,12 +1,13 @@
 import { Application, Assets, isMobile } from "pixi.js";
 import type { Renderer } from "pixi.js";
-import { keys, initKeyboardControls } from "./keyControls";
-import { gameConfig } from "./config/gameConfig";
-import { assetManifest } from "./manifest/assetManifest";
-import { TextManager } from "./TextManager";
-import type { RuntimeFlags } from "./types";
-import { PlayerPlane } from "./PlayerPlane";
-import { EnemyPlane } from "./EnemyPlane";
+import { keys, initKeyboardControls } from "@/keyControls";
+import { gameConfig } from "@/config/gameConfig";
+import { assetManifest } from "@/manifest/assetManifest";
+import { TextManager } from "@/TextManager";
+import type { RuntimeFlags } from "@/types";
+import { PlayerPlane } from "@/PlayerPlane";
+import { EnemyPlane } from "@/EnemyPlane";
+import { LayerManager } from "@/LayerManager";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {
@@ -72,6 +73,8 @@ async function startGame(
 ) {
   try {
     const mainContainer = app.stage;
+    const layerManager = new LayerManager(mainContainer);
+
     const gameScreenAssets = await Assets.loadBundle("game-screen");
     const player = new PlayerPlane(
       app.screen.width / 2,
@@ -79,7 +82,7 @@ async function startGame(
       180,
       gameScreenAssets.planeBlue,
     );
-    mainContainer.addChild(player);
+    layerManager.addChild(player);
 
     const enemyPlanes = new Set<EnemyPlane>();
 
@@ -100,13 +103,8 @@ async function startGame(
       if (spawnTimer <= 0) {
         spawnTimer = spawnInterval;
         // 敵出現処理
-        const enemyPlane = new EnemyPlane(
-          app.screen.width / 2,
-          0,
-          50,
-          gameScreenAssets.planeBlue,
-        );
-        mainContainer.addChild(enemyPlane);
+        const enemyPlane = new EnemyPlane(app.screen.width / 2, 0, 50);
+        layerManager.addChild(enemyPlane);
         enemyPlanes.add(enemyPlane);
       }
 
@@ -118,17 +116,9 @@ async function startGame(
       }
       if (keys.left) {
         player.moveLeft(deltaMS, score * scoreSpeedRate);
-        /*
-        player.angle -= 1;
-        player.spriteAngle = player.angle;
-        */
       }
       if (keys.right) {
         player.moveRight(deltaMS, score * scoreSpeedRate);
-        /*
-        player.angle += 1;
-        player.spriteAngle = player.angle;
-        */
       }
 
       const pendingRemovalEnemies = new Set<EnemyPlane>();

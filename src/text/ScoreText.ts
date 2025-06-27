@@ -1,5 +1,5 @@
 import { DefaultText } from "./DefaultText";
-import { textMessagesConfig } from "../config";
+import { textMessagesConfig } from "@/config";
 
 /**
  * スコア表示用のテキストクラス。

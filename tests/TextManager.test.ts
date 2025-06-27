@@ -1,8 +1,8 @@
 import { Container } from "pixi.js";
-import { TextManager } from "../src/TextManager";
+import { TextManager } from "@/TextManager";
 
 describe("TextManager", () => {
-  it("スコアと経過時間が更新されるべき", () => {
+  test("スコアと経過時間が更新されるべき", () => {
     const container = new Container();
     const textManager = new TextManager(container, true);
     textManager.updateText({
@@ -14,7 +14,7 @@ describe("TextManager", () => {
     expect(textManager.elapsedTimeText.displayTime).toBe(12.5);
   });
 
-  it("開発モードのとき、プレイヤーの位置とデルタ時間が更新されるべき", () => {
+  test("開発モードのとき、プレイヤーの位置とデルタ時間が更新されるべき", () => {
     const container = new Container();
     const textManager = new TextManager(container, true);
     textManager.updateText({
@@ -28,7 +28,7 @@ describe("TextManager", () => {
     expect(textManager.deltaTimeText.displayDeltaMS).toBe(16);
   });
 
-  it("非開発モードのとき、プレイヤーの位置とデルタ時間が非表示にされるべき", () => {
+  test("非開発モードのとき、プレイヤーの位置とデルタ時間が非表示にされるべき", () => {
     const container = new Container();
     const textManager = new TextManager(container, false);
 
@@ -42,7 +42,7 @@ describe("TextManager", () => {
     expect(textManager.deltaTimeText.destroyed).toBe(true);
   });
 
-  it("データの一部だけが提供されたときでもエラーを出さないべき", () => {
+  test("データの一部だけが提供されたときでもエラーを出さないべき", () => {
     const container = new Container();
     const textManager = new TextManager(container, true);
     expect(() =>

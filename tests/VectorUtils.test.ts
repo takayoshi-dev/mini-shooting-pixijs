@@ -1,5 +1,5 @@
-import { VectorUtils } from "../src/VectorUtils";
-import { Vector2 } from "../src/Vector2";
+import { VectorUtils } from "@/VectorUtils";
+import { Vector2 } from "@/Vector2";
 
 describe("VectorUtils.createUnitVectorのテスト", () => {
   const testCases: Array<[number, Vector2]> = [

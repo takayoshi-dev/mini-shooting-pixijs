@@ -2,8 +2,8 @@ import {
   keys,
   initKeyboardControls,
   removeKeyboardControls,
-} from "../src/keyControls";
-import { keyBindings } from "../src/config/keyConfig";
+} from "@/keyControls";
+import { keyBindings } from "@/config/keyConfig";
 
 describe("キー入力による状態変化のテスト", () => {
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("キー入力による状態変化のテスト", () => {
     removeKeyboardControls();
   });
 
-  it("upに割り当てられたキーの押下", () => {
+  test("upに割り当てられたキーの押下", () => {
     expect(keyBindings.up.length).toBeGreaterThanOrEqual(1);
 
     keyBindings.up.forEach((value: string) => {
@@ -39,7 +39,7 @@ describe("キー入力による状態変化のテスト", () => {
     });
   });
 
-  it("downに割り当てられたキーの押下", () => {
+  test("downに割り当てられたキーの押下", () => {
     expect(keyBindings.down.length).toBeGreaterThanOrEqual(1);
 
     keyBindings.down.forEach((value: string) => {
@@ -59,7 +59,7 @@ describe("キー入力による状態変化のテスト", () => {
     });
   });
 
-  it("leftに割り当てられたキーの押下", () => {
+  test("leftに割り当てられたキーの押下", () => {
     expect(keyBindings.left.length).toBeGreaterThanOrEqual(1);
 
     keyBindings.left.forEach((value: string) => {
@@ -79,7 +79,7 @@ describe("キー入力による状態変化のテスト", () => {
     });
   });
 
-  it("rightに割り当てられたキーの押下", () => {
+  test("rightに割り当てられたキーの押下", () => {
     expect(keyBindings.right.length).toBeGreaterThanOrEqual(1);
 
     keyBindings.right.forEach((value: string) => {
@@ -99,7 +99,7 @@ describe("キー入力による状態変化のテスト", () => {
     });
   });
 
-  it("fireに割り当てられたキーの押下", () => {
+  test("fireに割り当てられたキーの押下", () => {
     expect(keyBindings.fire.length).toBeGreaterThanOrEqual(1);
 
     keyBindings.fire.forEach((value: string) => {
@@ -119,7 +119,7 @@ describe("キー入力による状態変化のテスト", () => {
     });
   });
 
-  it("同時押し（left + fire）", () => {
+  test("同時押し（left + fire）", () => {
     expect(keyBindings.left.length).toBeGreaterThanOrEqual(1);
     expect(keyBindings.fire.length).toBeGreaterThanOrEqual(1);
 
@@ -150,7 +150,7 @@ describe("キー入力による状態変化のテスト", () => {
     expect(keys.fire).toBe(false);
   });
 
-  it("未定義キー（z）で影響がないことを確認", () => {
+  test("未定義キー（z）で影響がないことを確認", () => {
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "z" }));
     expect(keys.up).toBe(false);
     expect(keys.down).toBe(false);

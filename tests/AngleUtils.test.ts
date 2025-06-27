@@ -1,4 +1,4 @@
-import { AngleUtils } from "../src/AngleUtils";
+import { AngleUtils } from "@/AngleUtils";
 
 describe("AngleUtils の角度変換ユーティリティ", () => {
   describe("calcRadians()", () => {

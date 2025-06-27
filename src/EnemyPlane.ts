@@ -1,5 +1,7 @@
-import { Sprite, Texture, Point } from "pixi.js";
-import { Plane } from "./Plane";
+import { Point, Graphics } from "pixi.js";
+import { Plane } from "@/Plane";
+import { VectorUtils } from "@/VectorUtils";
+import { LayerType } from "@/constants/LayerType";
 
 /**
  * 敵機を表すクラス
@@ -15,23 +17,17 @@ export class EnemyPlane extends Plane {
    * @param speed 移動速度
    * @param planeTexture 機体の見た目を表すテクスチャ（省略可）。指定しない場合はGraphicsを使用。
    */
-  constructor(x: number, y: number, speed: number, planeTexture?: Texture) {
-    super(new Point(x, y), 90, speed);
+  constructor(x: number, y: number, speed: number) {
+    super(new Point(x, y), 90, speed, LayerType.Enemy);
 
-    this.graphics.fill(0x000000);
-    this.graphics.stroke({ width: 1, color: 0xff0000 });
-
-    if (planeTexture instanceof Texture) {
-      const sprite = new Sprite(planeTexture);
-      sprite.anchor.set(0.5);
-      this.addChild(sprite);
-    }
-  }
-
-  /**
-   * コンテナとすべての子要素を破棄し、メモリを解放する。
-   */
-  public releaseResources(): void {
-    super.destroy();
+    const radius = 10;
+    const v1 = VectorUtils.createUnitVector(0).scale(radius);
+    const v2 = VectorUtils.createUnitVector(120).scale(radius);
+    const v3 = VectorUtils.createUnitVector(-120).scale(radius);
+    const graphics = new Graphics();
+    graphics.poly([...v1.toArray(), ...v2.toArray(), ...v3.toArray()]);
+    graphics.fill(0x000000);
+    graphics.stroke({ width: 1, color: 0xff0000 });
+    this.addChild(graphics);
   }
 }

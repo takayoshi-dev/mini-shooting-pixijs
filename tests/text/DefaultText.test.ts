@@ -1,7 +1,7 @@
-import { DefaultText } from "./../../src/text/DefaultText";
+import { DefaultText } from "@/text/DefaultText";
 
 describe("DefaultTextクラスのテスト", () => {
-  it("デフォルトのテキストと位置で初期化されること", () => {
+  test("デフォルトのテキストと位置で初期化されること", () => {
     const text = new DefaultText(100, 200);
     expect(text.x).toBe(100);
     expect(text.y).toBe(200);
@@ -11,7 +11,7 @@ describe("DefaultTextクラスのテスト", () => {
     expect(text.style.fill).toBe(0xffffff);
   });
 
-  it("カスタムのオプションが反映されること", () => {
+  test("カスタムのオプションが反映されること", () => {
     const text = new DefaultText(0, 0, {
       text: "Hello",
       style: {
@@ -25,7 +25,7 @@ describe("DefaultTextクラスのテスト", () => {
     expect(text.style.fill).toBe(0xff0000);
   });
 
-  it("updateDisplay() をオーバーライドできること", () => {
+  test("updateDisplay() をオーバーライドできること", () => {
     class TestText extends DefaultText {
       private counter = 0;
 

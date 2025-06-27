@@ -1,5 +1,5 @@
 import { DefaultText } from "./DefaultText";
-import { textMessagesConfig } from "../config";
+import { textMessagesConfig } from "@/config";
 
 /**
  * フレーム間の経過時間（デルタタイム）を表示するテキストクラス。
