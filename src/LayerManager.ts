@@ -46,7 +46,7 @@ export class LayerManager {
   public addChild(entity: RenderableEntity): void {
     const layer: Layer | undefined = this.getLayer(entity.layerType);
     if (layer instanceof Layer) {
-      layer.attach(entity);
+      layer.attach(entity.container);
     }
   }
 }
