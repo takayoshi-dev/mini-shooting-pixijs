@@ -91,9 +91,11 @@ async function startGame(
     let elapsedSeconds: number = 0; // 経過時間[秒]
     const score: number = 0;
 
-    const spawnInterval = 1000; // 1秒(1000ms)ごとに敵出現
-    let spawnTimer = spawnInterval; // 敵出現経過時間
+    const initSpawnInterval = 1000; // 1秒後(1000ms)に敵出現
+    let spawnTimer = initSpawnInterval; // 敵出現経過時間
+    const boundaryWidth = 160;
 
+    let oldX = 0;
     const scoreSpeedRate = 1 / 500.0;
     app.ticker.add((time) => {
       const deltaMS = time.deltaMS;
@@ -101,9 +103,21 @@ async function startGame(
 
       spawnTimer -= deltaMS;
       if (spawnTimer <= 0) {
-        spawnTimer = spawnInterval;
+        spawnTimer = 200 + Math.random() * 1400;
         // 敵出現処理
-        const enemyPlane = new EnemyPlane(app.screen.width / 2, 0, 50);
+        const nowX =
+          Math.random() * (app.screen.width - (10 + boundaryWidth * 2));
+        let enemyScore = 5;
+        if (oldX > 0) {
+          enemyScore += Math.abs(nowX - oldX) / 30;
+        }
+        const enemyPlane = new EnemyPlane(
+          boundaryWidth + 10 + nowX,
+          0,
+          50,
+          enemyScore,
+        );
+        oldX = nowX;
         layerManager.addChild(enemyPlane);
         enemyPlanes.add(enemyPlane);
       }
