@@ -16,7 +16,7 @@ export abstract class RenderableEntity extends Container {
    *
    * {@link LayerManager} によってレイヤーの分類と、そのレイヤーへエンティティ追加が行われる際に参照されます。
    */
-  private _layerType: LayerType;
+  public readonly layerType: LayerType;
 
   /**
    * コンストラクタ
@@ -33,14 +33,7 @@ export abstract class RenderableEntity extends Container {
       rotation: rotation,
     });
     this.anchor(0.5, 0.5);
-    this._layerType = layerType;
-  }
-
-  /**
-   * 所属レイヤーを取得します。
-   */
-  public get layerType(): LayerType {
-    return this._layerType;
+    this.layerType = layerType;
   }
 
   /**
@@ -52,12 +45,10 @@ export abstract class RenderableEntity extends Container {
   protected move(distance: number, angle: number): void {
     const distanceVec: Vector2 =
       VectorUtils.createUnitVector(angle).scale(distance);
-    const planePositionVec: Vector2 = new Vector2(
-      this.position.x,
-      this.position.y,
-    );
+    const planePositionVec: Vector2 = new Vector2(this.x, this.y);
     const newPosition: Vector2 = planePositionVec.add(distanceVec);
-    this.position.set(newPosition.x, newPosition.y);
+    this.x = newPosition.x;
+    this.y = newPosition.y;
   }
 
   /**

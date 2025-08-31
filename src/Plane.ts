@@ -1,7 +1,5 @@
 import { Point } from "pixi.js";
-
 import { AngleUtils } from "@/AngleUtils";
-
 import { RenderableEntity } from "@/RenderableEntity";
 import { LayerType } from "@/constants/LayerType";
 

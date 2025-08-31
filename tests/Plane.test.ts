@@ -20,43 +20,43 @@ describe("Plane クラス", () => {
       speed,
       LayerType.Player,
     );
-    expect(plane.position.x).toBe(initialX);
-    expect(plane.position.y).toBe(initialY);
+    expect(plane.x).toBe(initialX);
+    expect(plane.y).toBe(initialY);
   });
 
   test("上方向に移動できる（angle = 0）", () => {
     const plane = new Plane(new Point(0, 0), -90, 100, LayerType.Player);
     plane.moveUp(dummyDeltaMS, dummyBoost);
-    expect(plane.position.x).toBeCloseTo(0, 5);
-    expect(plane.position.y).toBeCloseTo(-100, 5);
+    expect(plane.x).toBeCloseTo(0, 5);
+    expect(plane.y).toBeCloseTo(-100, 5);
   });
 
   test("下方向に移動できる（angle = 0 → 180度）", () => {
     const plane = new Plane(new Point(0, 0), -90, 100, LayerType.Player);
     plane.moveDown(dummyDeltaMS, dummyBoost);
-    expect(plane.position.x).toBeCloseTo(0, 5);
-    expect(plane.position.y).toBeCloseTo(100, 5);
+    expect(plane.x).toBeCloseTo(0, 5);
+    expect(plane.y).toBeCloseTo(100, 5);
   });
 
   test("右方向に移動できる（angle = 0 → +90度）", () => {
     const plane = new Plane(new Point(0, 0), -90, 100, LayerType.Player);
     plane.moveRight(dummyDeltaMS, dummyBoost);
-    expect(plane.position.x).toBeCloseTo(100, 5);
-    expect(plane.position.y).toBeCloseTo(0, 5);
+    expect(plane.x).toBeCloseTo(100, 5);
+    expect(plane.y).toBeCloseTo(0, 5);
   });
 
   test("左方向に移動できる（angle = 0 → -90度）", () => {
     const plane = new Plane(new Point(0, 0), -90, 100, LayerType.Player);
     plane.moveLeft(dummyDeltaMS, dummyBoost);
-    expect(plane.position.x).toBeCloseTo(-100, 5);
-    expect(plane.position.y).toBeCloseTo(0, 5);
+    expect(plane.x).toBeCloseTo(-100, 5);
+    expect(plane.y).toBeCloseTo(0, 5);
   });
 
   test("スコアブーストを反映した移動距離の増加", () => {
     const plane = new Plane(new Point(0, 0), 0, 100, LayerType.Player);
     plane.moveUp(dummyDeltaMS, 100); // speed + boost = 200 → 200px移動
-    expect(plane.position.x).toBeCloseTo(200, 5);
-    expect(plane.position.y).toBeCloseTo(0, 5);
+    expect(plane.x).toBeCloseTo(200, 5);
+    expect(plane.y).toBeCloseTo(0, 5);
   });
 
   test("負の speed をセットすると 0 にクリアされる", () => {
