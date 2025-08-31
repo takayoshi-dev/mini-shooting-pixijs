@@ -67,7 +67,7 @@ describe("Plane クラス", () => {
 
   test("releaseResources() で destroy が呼ばれる（破棄される）", () => {
     const plane = new Plane(new Point(0, 0), 0, 100, LayerType.Player);
-    const destroySpy = vi.spyOn(plane.container, "destroy");
+    const destroySpy = vi.spyOn(plane, "destroy");
     plane.releaseResources();
     expect(destroySpy).toHaveBeenCalledWith({ children: true });
   });
