@@ -1,6 +1,6 @@
 import { Container, Point } from "pixi.js";
 import { LayerType } from "@/constants/LayerType";
-import { VectorUtils } from "@/VectorUtils";
+import { VectorUtils } from "@/utils/VectorUtils";
 import { Vector2 } from "@/Vector2";
 
 /**

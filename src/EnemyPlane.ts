@@ -1,6 +1,6 @@
 import { Point, Graphics } from "pixi.js";
 import { Plane } from "@/Plane";
-import { VectorUtils } from "@/VectorUtils";
+import { VectorUtils } from "@/utils/VectorUtils";
 import { LayerType } from "@/constants/LayerType";
 
 /**
