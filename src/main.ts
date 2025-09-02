@@ -8,6 +8,7 @@ import type { RuntimeFlags } from "@/types";
 import { PlayerPlane } from "@/PlayerPlane";
 import { EnemyPlane } from "@/EnemyPlane";
 import { LayerManager } from "@/LayerManager";
+import { RandomUtils } from "@/utils";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {
@@ -77,8 +78,8 @@ async function startGame(
 
     const gameScreenAssets = await Assets.loadBundle("game-screen");
     const player = new PlayerPlane(
-      app.screen.width / 2,
-      app.screen.height / 2,
+      app.screen.width * 0.5,
+      app.screen.height * 0.8,
       180,
       gameScreenAssets.planeBlue,
     );
@@ -103,10 +104,12 @@ async function startGame(
 
       spawnTimer -= deltaMS;
       if (spawnTimer <= 0) {
-        spawnTimer = 200 + Math.random() * 1400;
+        spawnTimer = RandomUtils.getRand(200, 1400);
         // 敵出現処理
-        const nowX =
-          Math.random() * (app.screen.width - (10 + boundaryWidth * 2));
+        const nowX = RandomUtils.getRand(
+          0,
+          app.screen.width - (boundaryWidth * 2 + 10),
+        );
         let enemyScore = 5;
         if (oldX > 0) {
           enemyScore += Math.abs(nowX - oldX) / 30;
