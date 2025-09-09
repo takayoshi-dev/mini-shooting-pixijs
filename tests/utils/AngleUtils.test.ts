@@ -1,7 +1,7 @@
-import { AngleUtils } from "@/AngleUtils";
+import { AngleUtils } from "@/utils";
 
-describe("AngleUtils の角度変換ユーティリティ", () => {
-  describe("calcRadians()", () => {
+describe("utils.AngleUtilsの単体テスト", () => {
+  describe("calcRadiansのテスト", () => {
     test("0 度 → 0 ラジアン", () => {
       expect(AngleUtils.calcRadians(0)).toBeCloseTo(0);
     });
@@ -23,7 +23,7 @@ describe("AngleUtils の角度変換ユーティリティ", () => {
     });
   });
 
-  describe("calcDegrees()", () => {
+  describe("calcDegreesのテスト", () => {
     test("0 ラジアン → 0 度", () => {
       expect(AngleUtils.calcDegrees(0)).toBeCloseTo(0);
     });

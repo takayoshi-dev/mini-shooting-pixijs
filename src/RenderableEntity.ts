@@ -1,7 +1,7 @@
-import { Container, Point } from "pixi.js";
+import { Container } from "pixi.js";
 import { LayerType } from "@/constants/LayerType";
-import { VectorUtils } from "@/VectorUtils";
-import { Vector2 } from "@/Vector2";
+import { VectorUtils } from "@/utils/VectorUtils";
+import { Vector2, Position } from "@/geometry";
 
 /**
  * エンティティの抽象基底クラス
@@ -27,7 +27,7 @@ export abstract class RenderableEntity extends Container {
    * @param rotation 回転角度（ラジアン）
    * @param layerType 所属レイヤーの識別子
    */
-  constructor(position: Point, rotation: number, layerType: LayerType) {
+  constructor(position: Position, rotation: number, layerType: LayerType) {
     super({
       position: position,
       rotation: rotation,
@@ -59,7 +59,7 @@ export abstract class RenderableEntity extends Container {
    */
   public anchor(x: number, y: number): void {
     if (0 <= x && x <= 1.0 && 0 <= y && y <= 1.0) {
-      this.pivot = new Point(this.width * x, this.height * y);
+      this.pivot = new Position(this.width * x, this.height * y);
     }
   }
 

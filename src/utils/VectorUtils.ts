@@ -1,5 +1,5 @@
-import { Vector2 } from "@/Vector2";
-import { AngleUtils } from "@/AngleUtils";
+import { Vector2 } from "@/geometry/Vector2";
+import { AngleUtils } from "@/utils/AngleUtils";
 
 /**
  * ベクトル操作に関するユーティリティクラス
