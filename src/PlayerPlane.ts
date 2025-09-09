@@ -1,6 +1,7 @@
-import { Sprite, Texture, Point } from "pixi.js";
+import { Sprite, Texture } from "pixi.js";
 import { Plane } from "@/Plane";
 import { LayerType } from "@/constants/LayerType";
+import { Position } from "@/geometry";
 
 /**
  * プレイヤー用の飛行機クラス
@@ -20,7 +21,9 @@ export class PlayerPlane extends Plane {
    * @param planeTexture 機体の見た目を表すテクスチャ
    */
   constructor(x: number, y: number, speed: number, planeTexture: Texture) {
-    super(new Point(x, y), -90, speed, LayerType.Player);
+    super(new Position(x, y), -90, speed, LayerType.Player);
+    this.width = planeTexture.width;
+    this.height = planeTexture.height;
 
     const sprite = new Sprite(planeTexture);
     sprite.anchor.set(0.5);

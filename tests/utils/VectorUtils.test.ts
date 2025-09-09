@@ -1,5 +1,5 @@
 import { VectorUtils } from "@/utils";
-import { Vector2 } from "@/Vector2";
+import { Vector2 } from "@/geometry/Vector2";
 
 describe("utils.VectorUtilsの単体テスト", () => {
   describe("createUnitVectorのテスト", () => {

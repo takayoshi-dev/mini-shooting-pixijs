@@ -1,7 +1,8 @@
-import { Point, Graphics } from "pixi.js";
+import { Graphics } from "pixi.js";
 import { Plane } from "@/Plane";
 import { VectorUtils } from "@/utils/VectorUtils";
 import { LayerType } from "@/constants/LayerType";
+import { Position } from "@/geometry";
 
 /**
  * 敵機を表すクラス
@@ -20,11 +21,12 @@ export class EnemyPlane extends Plane {
    * @param speed 移動速度
    * @param score 得点
    */
-  constructor(x: number, y: number, speed: number, score: number) {
-    super(new Point(x, y), 90, speed, LayerType.Enemy);
-    this.score = score;
+  constructor(x: number, y: number, speed: number, radius: number) {
+    super(new Position(x, y), 90, speed, LayerType.Enemy);
+    this.score = 5;
+    this.width = radius * 2;
+    this.height = radius * 2;
 
-    const radius = this.score + 5;
     const v1 = VectorUtils.createUnitVector(0).scale(radius);
     const v2 = VectorUtils.createUnitVector(120).scale(radius);
     const v3 = VectorUtils.createUnitVector(-120).scale(radius);

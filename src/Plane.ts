@@ -1,7 +1,7 @@
-import { Point } from "pixi.js";
 import { AngleUtils } from "@/utils/AngleUtils";
 import { RenderableEntity } from "@/RenderableEntity";
 import { LayerType } from "@/constants/LayerType";
+import { Position } from "@/geometry";
 
 /**
  * 汎用的な飛行機オブジェクトを表す基底クラス
@@ -19,7 +19,7 @@ export class Plane extends RenderableEntity {
    * @param layerName 描画先レイヤー名
    */
   constructor(
-    spawnPosition: Point,
+    spawnPosition: Position,
     angle: number,
     speed: number,
     layerName: LayerType,

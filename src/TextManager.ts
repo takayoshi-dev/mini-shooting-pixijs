@@ -29,12 +29,12 @@ export class TextManager {
     this._scoreText = new ScoreText(10, 20);
 
     this._playerPositionText = new PlayerPositionText(
-      gameConfig.canvas.width / 2 + 100,
+      gameConfig.canvas.width * 0.75 + 20,
       0,
     );
 
     this._deltaTimeText = new DeltaTimeText(
-      gameConfig.canvas.width / 2 + 100,
+      gameConfig.canvas.width * 0.75 + 20,
       20,
     );
 
