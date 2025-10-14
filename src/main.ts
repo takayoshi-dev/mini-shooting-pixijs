@@ -9,6 +9,7 @@ import { PlayerPlane } from "@/PlayerPlane";
 import { EnemyPlane } from "@/EnemyPlane";
 import { LayerManager } from "@/LayerManager";
 import { RandomUtils } from "@/utils";
+import { Laser } from "@/Laser";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {
@@ -112,6 +113,8 @@ async function startGame(
       BottomY: app.screen.height - gameConfig.playfield.margin.bottom,
     };
 
+    let fireCooldownTimer = 0;
+
     let oldX = 0;
     const scoreSpeedRate = 1 / 500.0;
     app.ticker.add((time) => {
@@ -139,7 +142,7 @@ async function startGame(
 
         const enemyPlane = new EnemyPlane(
           nowX,
-          gameConfig.playfield.margin.top - enemyRadius,
+          boundary.TopY - enemyRadius,
           50,
           enemyRadius,
         );
@@ -176,14 +179,23 @@ async function startGame(
           player.x = boundaryRightX;
         }
       }
+      if (keys.fire) {
+        if (fireCooldownTimer <= 0) {
+          fireCooldownTimer = 500;
+          fireLaser(layerManager, player /*, enemyPlanes*/);
+        }
+      }
+
+      fireCooldownTimer -= deltaMS;
+      if (fireCooldownTimer < 0) {
+        fireCooldownTimer = 0;
+      }
 
       const pendingRemovalEnemies = new Set<EnemyPlane>();
       enemyPlanes.forEach((enemy) => {
         enemy.moveUp(deltaMS, score * scoreSpeedRate);
-        const boundaryBottomY =
-          app.screen.height - gameConfig.playfield.margin.bottom;
         const enemyY = enemy.y - enemy.height / 2;
-        if (enemyY > boundaryBottomY) {
+        if (enemyY > boundary.BottomY) {
           pendingRemovalEnemies.add(enemy);
         }
       });
@@ -231,4 +243,14 @@ function drawBoundaryLines(app: Application): Graphics {
       pixelLine: gameConfig.playfield.walls.pixelLine,
     });
   return boundaryWall;
+}
+
+function fireLaser(
+  layerManager: LayerManager,
+  player: PlayerPlane,
+  //enemyPlanes: Set<EnemyPlane>,
+) {
+  const playerLayer = new Laser(player.x, player.y, 1, -90, 100);
+  layerManager.addChild(playerLayer);
+  //enemyPlanes.add(enemyPlane);
 }

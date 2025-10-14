@@ -6,6 +6,7 @@
  */
 export const LayerType = {
   Background: "background",
+  Laser: "laser",
   Enemy: "enemy",
   Player: "player",
   UI: "ui",

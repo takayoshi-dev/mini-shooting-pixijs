@@ -1,8 +1,7 @@
-import { Graphics } from "pixi.js";
 import { Plane } from "@/Plane";
-import { VectorUtils } from "@/utils/VectorUtils";
 import { LayerType } from "@/constants/LayerType";
 import { Position } from "@/geometry";
+import { ShapeFactory } from "@/graphics";
 
 /**
  * 敵機を表すクラス
@@ -27,13 +26,7 @@ export class EnemyPlane extends Plane {
     this.width = radius * 2;
     this.height = radius * 2;
 
-    const v1 = VectorUtils.createUnitVector(0).scale(radius);
-    const v2 = VectorUtils.createUnitVector(120).scale(radius);
-    const v3 = VectorUtils.createUnitVector(-120).scale(radius);
-    const graphics = new Graphics();
-    graphics.poly([...v1.toArray(), ...v2.toArray(), ...v3.toArray()]);
-    graphics.fill(0x000000);
-    graphics.stroke({ width: 1, color: 0xff0000 });
+    const graphics = ShapeFactory.makeTriangle(radius, 0);
     this.addChild(graphics);
   }
 }
