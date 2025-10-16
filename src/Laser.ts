@@ -52,8 +52,7 @@ export class Laser extends RenderableEntity {
    * @param scoreBoost スコアに応じた速度補正値
    */
   public moveUp(deltaMS: number, scoreBoost: number): void {
-    if (this.movementWaitTimer > 0) {
-      this.movementWaitTimer -= deltaMS;
+    if (!this.isMovementWaitFinished()) {
       return;
     }
     const distance = this.calcDistanceByScore(this.speed, deltaMS, scoreBoost);
@@ -68,8 +67,7 @@ export class Laser extends RenderableEntity {
    * @param scoreBoost スコアに応じた速度補正値
    */
   public moveDown(deltaMS: number, scoreBoost: number): void {
-    if (this.movementWaitTimer > 0) {
-      this.movementWaitTimer -= deltaMS;
+    if (!this.isMovementWaitFinished()) {
       return;
     }
     const distance = this.calcDistanceByScore(this.speed, deltaMS, scoreBoost);
@@ -83,8 +81,7 @@ export class Laser extends RenderableEntity {
    * @param scoreBoost スコアに応じた速度補正値
    */
   public moveRight(deltaMS: number, scoreBoost: number): void {
-    if (this.movementWaitTimer > 0) {
-      this.movementWaitTimer -= deltaMS;
+    if (!this.isMovementWaitFinished()) {
       return;
     }
     const distance = this.calcDistanceByScore(this.speed, deltaMS, scoreBoost);
@@ -98,8 +95,7 @@ export class Laser extends RenderableEntity {
    * @param scoreBoost スコアに応じた速度補正値
    */
   public moveLeft(deltaMS: number, scoreBoost: number): void {
-    if (this.movementWaitTimer > 0) {
-      this.movementWaitTimer -= deltaMS;
+    if (!this.isMovementWaitFinished()) {
       return;
     }
     const distance = this.calcDistanceByScore(this.speed, deltaMS, scoreBoost);
@@ -120,5 +116,25 @@ export class Laser extends RenderableEntity {
     scoreBoost: number,
   ): number {
     return ((scoreBoost + speed) * deltaMS) / 1000;
+  }
+
+  /**
+   * タイマー系の値を更新する。
+   *
+   * @param deltaMS 前フレームからの経過時間（ミリ秒）
+   */
+  public updateTimers(deltaMS: number): void {
+    if (this.movementWaitTimer > 0) {
+      this.movementWaitTimer -= deltaMS;
+    }
+  }
+
+  /**
+   * 移動待機タイマーが終了しているかどうかを判定する。
+   *
+   * @returns true: 移動可能、 false: 移動待機中
+   */
+  public isMovementWaitFinished(): boolean {
+    return this.movementWaitTimer <= 0;
   }
 }

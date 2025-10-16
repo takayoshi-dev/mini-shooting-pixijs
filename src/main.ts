@@ -10,7 +10,6 @@ import { EnemyPlane } from "@/EnemyPlane";
 import { LayerManager } from "@/LayerManager";
 import { RandomUtils } from "@/utils";
 import { Laser } from "@/Laser";
-import { Vector2 } from "@/geometry";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {
@@ -115,8 +114,6 @@ async function startGame(
       BottomY: app.screen.height - gameConfig.playfield.margin.bottom,
     };
 
-    let fireCooldownTimer = 0;
-
     let oldX = 0;
     const scoreSpeedRate = 1 / 500.0;
     app.ticker.add((time) => {
@@ -182,24 +179,27 @@ async function startGame(
         }
       }
       if (keys.fire) {
-        if (fireCooldownTimer <= 0) {
-          fireCooldownTimer = 500;
-          fireLaser(layerManager, player, lasers);
-        }
+        player.fireLaser(layerManager, lasers);
       }
+      player.updateTimers(deltaMS);
 
-      fireCooldownTimer -= deltaMS;
-      if (fireCooldownTimer < 0) {
-        fireCooldownTimer = 0;
-      }
-
-      // 敵機の移動処理
+      // 敵機の処理全般
       const pendingRemovalEnemies = new Set<EnemyPlane>();
       enemyPlanes.forEach((enemy) => {
+        enemy.updateTimers(deltaMS);
+        // 敵機 - 移動処理
         enemy.moveUp(deltaMS, score * scoreSpeedRate);
         const enemyY = enemy.y - enemy.height / 2;
         if (enemyY > boundary.BottomY) {
           pendingRemovalEnemies.add(enemy);
+        }
+
+        // 敵機 - 射撃処理
+        const halfWidth = enemy.width / 2;
+        if (enemy.x - halfWidth < player.x && player.x < enemy.x + halfWidth) {
+          if (enemy.y < player.y) {
+            enemy.fireLaser(layerManager, lasers);
+          }
         }
       });
       if (pendingRemovalEnemies.size > 0) {
@@ -213,6 +213,7 @@ async function startGame(
       // レーザーの移動処理
       const pendingRemovalLasers = new Set<Laser>();
       lasers.forEach((laser) => {
+        laser.updateTimers(deltaMS);
         laser.moveUp(deltaMS, score * scoreSpeedRate);
         const laserY = laser.y - laser.height / 2;
         if (laserY > boundary.BottomY) {
@@ -264,37 +265,4 @@ function drawBoundaryLines(app: Application): Graphics {
       pixelLine: gameConfig.playfield.walls.pixelLine,
     });
   return boundaryWall;
-}
-
-function fireLaser(
-  layerManager: LayerManager,
-  player: PlayerPlane,
-  lasers: Set<Laser>,
-) {
-  const trailCount = 10;
-  const trailIntervalMS = 15;
-  const laserSideOffset = new Vector2(9, 9);
-  for (let i = 0; i < trailCount; i++) {
-    const rightLaser = new Laser(
-      player.x + laserSideOffset.x,
-      player.y + laserSideOffset.y,
-      1,
-      -90,
-      200,
-      trailIntervalMS * i,
-    );
-    layerManager.addChild(rightLaser);
-    lasers.add(rightLaser);
-
-    const leftLaser = new Laser(
-      player.x - laserSideOffset.x,
-      player.y + laserSideOffset.y,
-      1,
-      -90,
-      200,
-      trailIntervalMS * i,
-    );
-    layerManager.addChild(leftLaser);
-    lasers.add(leftLaser);
-  }
 }
