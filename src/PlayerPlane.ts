@@ -1,7 +1,10 @@
-import { Sprite, Texture } from "pixi.js";
+import { Texture } from "pixi.js";
 import { Plane } from "@/Plane";
 import { LayerType } from "@/constants/LayerType";
-import { Position } from "@/geometry";
+import { Position, Vector2 } from "@/geometry";
+import { SpriteFactory } from "@/graphics";
+import { Laser } from "@/Laser";
+import { LayerManager } from "@/LayerManager";
 
 /**
  * プレイヤー用の飛行機クラス
@@ -21,12 +24,54 @@ export class PlayerPlane extends Plane {
    * @param planeTexture 機体の見た目を表すテクスチャ
    */
   constructor(x: number, y: number, speed: number, planeTexture: Texture) {
-    super(new Position(x, y), -90, speed, LayerType.Player);
+    super(new Position(x, y), -90, speed, LayerType.Player, 500);
     this.width = planeTexture.width;
     this.height = planeTexture.height;
 
-    const sprite = new Sprite(planeTexture);
-    sprite.anchor.set(0.5);
+    const sprite = SpriteFactory.makeSprite(planeTexture);
     this.addChild(sprite);
+  }
+
+  /**
+   * レーザーを発射する。
+   *
+   * @param layerManager レイヤー管理インスタンス
+   * @param lasers レーザー管理インスタンス
+   */
+  public fireLaser(layerManager: LayerManager, lasers: Set<Laser>): void {
+    const laserSpeed = 200;
+    const laserRadius = 1;
+    const trailCount = 10;
+    const trailIntervalMS = 15;
+    const laserSideOffset = new Vector2(9, 9);
+
+    if (!this.isFireCooldownFinished()) {
+      return;
+    }
+
+    for (let i = 0; i < trailCount; i++) {
+      const rightLaser = new Laser(
+        this.x + laserSideOffset.x,
+        this.y + laserSideOffset.y,
+        laserRadius,
+        -90,
+        laserSpeed,
+        trailIntervalMS * i,
+      );
+      layerManager.addChild(rightLaser);
+      lasers.add(rightLaser);
+
+      const leftLaser = new Laser(
+        this.x - laserSideOffset.x,
+        this.y + laserSideOffset.y,
+        1,
+        -90,
+        200,
+        trailIntervalMS * i,
+      );
+      layerManager.addChild(leftLaser);
+      lasers.add(leftLaser);
+    }
+    this.startFireCooldown();
   }
 }

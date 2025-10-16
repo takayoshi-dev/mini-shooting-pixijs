@@ -9,6 +9,7 @@ import { PlayerPlane } from "@/PlayerPlane";
 import { EnemyPlane } from "@/EnemyPlane";
 import { LayerManager } from "@/LayerManager";
 import { RandomUtils } from "@/utils";
+import { Laser } from "@/Laser";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {
@@ -86,6 +87,7 @@ async function startGame(
     layerManager.addChild(player);
 
     const enemyPlanes = new Set<EnemyPlane>();
+    const lasers = new Set<Laser>();
 
     const textManager = new TextManager(mainContainer, runtimeFlags.isDevMode);
 
@@ -120,8 +122,8 @@ async function startGame(
 
       spawnTimer -= deltaMS;
       if (spawnTimer <= 0) {
-        //spawnTimer = RandomUtils.getRand(200, 1400);
-        spawnTimer = 100;
+        spawnTimer = RandomUtils.getRand(200, 1400);
+        //spawnTimer = 100;
         // 敵出現処理
         let nowX = RandomUtils.getRand(boundary.LeftX, boundary.RightX);
 
@@ -139,7 +141,7 @@ async function startGame(
 
         const enemyPlane = new EnemyPlane(
           nowX,
-          gameConfig.playfield.margin.top - enemyRadius,
+          boundary.TopY - enemyRadius,
           50,
           enemyRadius,
         );
@@ -176,15 +178,28 @@ async function startGame(
           player.x = boundaryRightX;
         }
       }
+      if (keys.fire) {
+        player.fireLaser(layerManager, lasers);
+      }
+      player.updateTimers(deltaMS);
 
+      // 敵機の処理全般
       const pendingRemovalEnemies = new Set<EnemyPlane>();
       enemyPlanes.forEach((enemy) => {
+        enemy.updateTimers(deltaMS);
+        // 敵機 - 移動処理
         enemy.moveUp(deltaMS, score * scoreSpeedRate);
-        const boundaryBottomY =
-          app.screen.height - gameConfig.playfield.margin.bottom;
         const enemyY = enemy.y - enemy.height / 2;
-        if (enemyY > boundaryBottomY) {
+        if (enemyY > boundary.BottomY) {
           pendingRemovalEnemies.add(enemy);
+        }
+
+        // 敵機 - 射撃処理
+        const halfWidth = enemy.width / 2;
+        if (enemy.x - halfWidth < player.x && player.x < enemy.x + halfWidth) {
+          if (enemy.y < player.y) {
+            enemy.fireLaser(layerManager, lasers);
+          }
         }
       });
       if (pendingRemovalEnemies.size > 0) {
@@ -195,6 +210,25 @@ async function startGame(
         pendingRemovalEnemies.clear();
       }
 
+      // レーザーの移動処理
+      const pendingRemovalLasers = new Set<Laser>();
+      lasers.forEach((laser) => {
+        laser.updateTimers(deltaMS);
+        laser.moveUp(deltaMS, score * scoreSpeedRate);
+        const laserY = laser.y - laser.height / 2;
+        if (laserY > boundary.BottomY) {
+          pendingRemovalLasers.add(laser);
+        }
+      });
+      if (pendingRemovalLasers.size > 0) {
+        pendingRemovalLasers.forEach((laser) => {
+          lasers.delete(laser);
+          laser.releaseResources();
+        });
+        pendingRemovalLasers.clear();
+      }
+
+      // テキスト更新処理
       textManager.updateText({
         score: score,
         playerX: Math.round(player.x),
