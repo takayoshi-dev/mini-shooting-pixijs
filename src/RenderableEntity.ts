@@ -1,5 +1,5 @@
 import { Container } from "pixi.js";
-import { LayerType } from "@/constants/LayerType";
+import { LayerType } from "@/constants";
 import { VectorUtils } from "@/utils/VectorUtils";
 import { Vector2, Position } from "@/geometry";
 

@@ -1,14 +1,16 @@
 import { AngleUtils } from "@/utils/AngleUtils";
 import { RenderableEntity } from "@/RenderableEntity";
-import { LayerType } from "@/constants/LayerType";
-import { Position } from "@/geometry";
+import { LayerType, FactionType } from "@/constants";
+import { Position, Vector2 } from "@/geometry";
+import { Laser } from "@/Laser";
+import { LayerManager } from "@/LayerManager";
 
 /**
  * 汎用的な飛行機オブジェクトを表す基底クラス
  */
 export class Plane extends RenderableEntity {
   /** 移動速度 */
-  private _speed: number;
+  public speed: number;
 
   /** 射撃処理を開始するまでの待機タイマー（ミリ秒） */
   private fireCooldownTimer: number;
@@ -17,8 +19,17 @@ export class Plane extends RenderableEntity {
   public readonly fireCooldownDurationMs: number = 0;
 
   /**
+   * 所属陣営
+   */
+  public readonly factionType: FactionType;
+
+  /** スコア */
+  public readonly score: number;
+
+  /**
    * コンストラクタ
    *
+   * @param factionType 所属陣営
    * @param spawnPosition 初期表示位置（座標）
    * @param angle 初期の向き（角度、度数法）
    * @param speed 移動速度
@@ -26,38 +37,47 @@ export class Plane extends RenderableEntity {
    * @param fireCooldownDurationMs 射撃後に再発射可能になるまでの時間（ms）
    */
   constructor(
+    factionType: FactionType,
     spawnPosition: Position,
-    angle: number,
     speed: number,
-    layerName: LayerType,
-    fireCooldownDurationMs: number,
   ) {
+    let angle: number;
+    let layerName: LayerType;
+
+    switch (factionType) {
+      case FactionType.Player:
+        angle = -90;
+        layerName = LayerType.Player;
+        break;
+      case FactionType.Enemy:
+        angle = 90;
+        layerName = LayerType.Enemy;
+        break;
+      default:
+        angle = 0;
+        layerName = LayerType.Background;
+        break;
+    }
     super(spawnPosition, AngleUtils.calcRadians(angle), layerName);
-    this._speed = speed;
+
+    const fireCooldownDurationMs = 500;
+    this.factionType = factionType;
+    this.speed = speed;
     this.fireCooldownTimer = 0;
     if (fireCooldownDurationMs > 0) {
       this.fireCooldownDurationMs = fireCooldownDurationMs;
     }
-  }
+    this.score = 0;
 
-  /**
-   * 移動速度を取得する
-   *
-   * @returns 現在の移動速度
-   */
-  get speed(): number {
-    return this._speed;
-  }
-
-  /**
-   * 移動速度を設定する
-   *
-   * @param value 変更する移動速度
-   */
-  set speed(value: number) {
-    this._speed = 0;
-    if (value >= 0) {
-      this._speed = value;
+    switch (factionType) {
+      case FactionType.Player:
+        this.score = 0;
+        break;
+      case FactionType.Enemy:
+        this.score = 5;
+        break;
+      default:
+        break;
     }
   }
 
@@ -68,7 +88,7 @@ export class Plane extends RenderableEntity {
    * @param scoreBoost スコアに応じた速度補正値
    */
   public moveUp(deltaMS: number, scoreBoost: number): void {
-    const distance = this.calcDistanceByScore(this._speed, deltaMS, scoreBoost);
+    const distance = this.calcDistanceByScore(this.speed, deltaMS, scoreBoost);
     this.move(distance, this.angle);
   }
 
@@ -79,7 +99,7 @@ export class Plane extends RenderableEntity {
    * @param scoreBoost スコアに応じた速度補正値
    */
   public moveDown(deltaMS: number, scoreBoost: number): void {
-    const distance = this.calcDistanceByScore(this._speed, deltaMS, scoreBoost);
+    const distance = this.calcDistanceByScore(this.speed, deltaMS, scoreBoost);
     this.move(distance, this.angle + 180);
   }
 
@@ -90,7 +110,7 @@ export class Plane extends RenderableEntity {
    * @param scoreBoost スコアに応じた速度補正値
    */
   public moveRight(deltaMS: number, scoreBoost: number): void {
-    const distance = this.calcDistanceByScore(this._speed, deltaMS, scoreBoost);
+    const distance = this.calcDistanceByScore(this.speed, deltaMS, scoreBoost);
     this.move(distance, this.angle + 90);
   }
 
@@ -101,7 +121,7 @@ export class Plane extends RenderableEntity {
    * @param scoreBoost スコアに応じた速度補正値
    */
   public moveLeft(deltaMS: number, scoreBoost: number): void {
-    const distance = this.calcDistanceByScore(this._speed, deltaMS, scoreBoost);
+    const distance = this.calcDistanceByScore(this.speed, deltaMS, scoreBoost);
     this.move(distance, this.angle - 90);
   }
 
@@ -146,5 +166,92 @@ export class Plane extends RenderableEntity {
    */
   public startFireCooldown(): void {
     this.fireCooldownTimer = this.fireCooldownDurationMs;
+  }
+
+  /**
+   * レーザーを発射する。
+   *
+   * @param layerManager レイヤー管理インスタンス
+   * @param lasers レーザー管理インスタンス
+   */
+  public fireLaser(layerManager: LayerManager, lasers: Set<Laser>): void {
+    switch (this.factionType) {
+      case FactionType.Player:
+        this.firePlayerLaser(layerManager, lasers);
+        break;
+      case FactionType.Enemy:
+        this.fireEnemyLaser(layerManager, lasers);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private firePlayerLaser(
+    layerManager: LayerManager,
+    lasers: Set<Laser>,
+  ): void {
+    const laserSpeed = 200;
+    const laserRadius = 1;
+    const trailCount = 10;
+    const trailIntervalMS = 15;
+    const laserSideOffset = new Vector2(9, 9);
+
+    if (!this.isFireCooldownFinished()) {
+      return;
+    }
+
+    for (let i = 0; i < trailCount; i++) {
+      const rightLaser = new Laser(
+        this.x + laserSideOffset.x,
+        this.y + laserSideOffset.y,
+        laserRadius,
+        -90,
+        laserSpeed,
+        trailIntervalMS * i,
+        this.factionType,
+      );
+      layerManager.addChild(rightLaser);
+      lasers.add(rightLaser);
+
+      const leftLaser = new Laser(
+        this.x - laserSideOffset.x,
+        this.y + laserSideOffset.y,
+        1,
+        -90,
+        200,
+        trailIntervalMS * i,
+        this.factionType,
+      );
+      layerManager.addChild(leftLaser);
+      lasers.add(leftLaser);
+    }
+    this.startFireCooldown();
+  }
+
+  public fireEnemyLaser(layerManager: LayerManager, lasers: Set<Laser>): void {
+    const laserSpeed = 200;
+    const laserRadius = 1;
+    const trailCount = 10;
+    const trailIntervalMS = 15;
+
+    if (!this.isFireCooldownFinished()) {
+      return;
+    }
+
+    for (let i = 0; i < trailCount; i++) {
+      const laser = new Laser(
+        this.x,
+        this.y,
+        laserRadius,
+        90,
+        laserSpeed,
+        trailIntervalMS * i,
+        this.factionType,
+      );
+      layerManager.addChild(laser);
+      lasers.add(laser);
+    }
+    this.startFireCooldown();
   }
 }

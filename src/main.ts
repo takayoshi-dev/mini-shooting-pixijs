@@ -5,11 +5,13 @@ import { gameConfig } from "@/config/gameConfig";
 import { assetManifest } from "@/manifest/assetManifest";
 import { TextManager } from "@/TextManager";
 import type { RuntimeFlags } from "@/types";
-import { PlayerPlane } from "@/PlayerPlane";
-import { EnemyPlane } from "@/EnemyPlane";
 import { LayerManager } from "@/LayerManager";
 import { RandomUtils } from "@/utils";
 import { Laser } from "@/Laser";
+import { Plane } from "@/Plane";
+import { FactionType } from "@/constants";
+import { Position } from "@/geometry";
+import { SpriteFactory, ShapeFactory } from "@/graphics";
 
 (async () => {
   const runtimeFlags: RuntimeFlags = {
@@ -78,16 +80,22 @@ async function startGame(
     const layerManager = new LayerManager(mainContainer);
 
     const gameScreenAssets = await Assets.loadBundle("game-screen");
-    const player = new PlayerPlane(
-      app.screen.width * 0.5,
-      app.screen.height * 0.8,
+    //const enemyPlanes = new Set<Plane>();
+    const planes = new Set<Plane>();
+    const lasers = new Set<Laser>();
+
+    const player = new Plane(
+      FactionType.Player,
+      new Position(app.screen.width * 0.5, app.screen.height * 0.8),
       180,
-      gameScreenAssets.planeBlue,
+    );
+    player.addChild(SpriteFactory.makeSprite(gameScreenAssets.planeBlue));
+    player.setSize(
+      gameScreenAssets.planeBlue.width,
+      gameScreenAssets.planeBlue.height,
     );
     layerManager.addChild(player);
-
-    const enemyPlanes = new Set<EnemyPlane>();
-    const lasers = new Set<Laser>();
+    planes.add(player);
 
     const textManager = new TextManager(mainContainer, runtimeFlags.isDevMode);
 
@@ -139,15 +147,16 @@ async function startGame(
           nowX = boundary.RightX - enemyRadius;
         }
 
-        const enemyPlane = new EnemyPlane(
-          nowX,
-          boundary.TopY - enemyRadius,
+        const enemyPlane = new Plane(
+          FactionType.Enemy,
+          new Position(nowX, boundary.TopY - enemyRadius),
           50,
-          enemyRadius,
         );
+        enemyPlane.addChild(ShapeFactory.makeTriangle(enemyRadius, 0));
+        enemyPlane.setSize(enemyRadius * 2, enemyRadius * 2);
         oldX = nowX;
         layerManager.addChild(enemyPlane);
-        enemyPlanes.add(enemyPlane);
+        planes.add(enemyPlane);
       }
 
       if (keys.up) {
@@ -181,30 +190,40 @@ async function startGame(
       if (keys.fire) {
         player.fireLaser(layerManager, lasers);
       }
-      player.updateTimers(deltaMS);
 
-      // 敵機の処理全般
-      const pendingRemovalEnemies = new Set<EnemyPlane>();
-      enemyPlanes.forEach((enemy) => {
-        enemy.updateTimers(deltaMS);
-        // 敵機 - 移動処理
-        enemy.moveUp(deltaMS, score * scoreSpeedRate);
-        const enemyY = enemy.y - enemy.height / 2;
-        if (enemyY > boundary.BottomY) {
-          pendingRemovalEnemies.add(enemy);
+      // 機体処理全般
+      const pendingRemovalEnemies = new Set<Plane>();
+      planes.forEach((plane) => {
+        plane.updateTimers(deltaMS);
+
+        // 移動処理
+        if (
+          plane.factionType == FactionType.Enemy ||
+          plane.factionType == FactionType.Neutral
+        ) {
+          plane.moveUp(deltaMS, score * scoreSpeedRate);
+          const enemyY = plane.y - plane.height / 2;
+          if (enemyY > boundary.BottomY) {
+            pendingRemovalEnemies.add(plane);
+          }
         }
 
-        // 敵機 - 射撃処理
-        const halfWidth = enemy.width / 2;
-        if (enemy.x - halfWidth < player.x && player.x < enemy.x + halfWidth) {
-          if (enemy.y < player.y) {
-            enemy.fireLaser(layerManager, lasers);
+        // 敵機射撃処理
+        if (plane.factionType == FactionType.Enemy) {
+          const halfWidth = plane.width / 2;
+          if (
+            plane.x - halfWidth < player.x &&
+            player.x < plane.x + halfWidth
+          ) {
+            if (plane.y < player.y) {
+              plane.fireLaser(layerManager, lasers);
+            }
           }
         }
       });
       if (pendingRemovalEnemies.size > 0) {
         pendingRemovalEnemies.forEach((enemy) => {
-          enemyPlanes.delete(enemy);
+          planes.delete(enemy);
           enemy.releaseResources();
         });
         pendingRemovalEnemies.clear();
