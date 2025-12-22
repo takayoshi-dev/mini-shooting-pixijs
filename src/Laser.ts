@@ -1,7 +1,7 @@
 import { AngleUtils } from "@/utils";
 import { RenderableEntity } from "@/RenderableEntity";
 import { Position } from "@/geometry";
-import { LayerType } from "@/constants/LayerType";
+import { LayerType, FactionType } from "@/constants";
 import { ShapeFactory } from "@/graphics";
 
 export class Laser extends RenderableEntity {
@@ -16,6 +16,11 @@ export class Laser extends RenderableEntity {
   private movementWaitTimer: number;
 
   /**
+   * 所属陣営
+   */
+  public readonly factionType: FactionType;
+
+  /**
    * コンストラクタ
    *
    * @param x 初期X座標
@@ -23,6 +28,8 @@ export class Laser extends RenderableEntity {
    * @param radius 半径
    * @param initialAngle 初期の向き（角度、度数法）
    * @param initialSpeed 移動速度
+   * @param moveDelayMs 移動待機時間（ミリ秒）
+   * @param factionType 所属陣営
    */
   constructor(
     x: number,
@@ -31,6 +38,7 @@ export class Laser extends RenderableEntity {
     initialAngle: number,
     initialSpeed: number,
     moveDelayMs: number,
+    factionType: FactionType,
   ) {
     super(
       new Position(x, y),
@@ -39,6 +47,7 @@ export class Laser extends RenderableEntity {
     );
     this.speed = initialSpeed;
     this.movementWaitTimer = moveDelayMs;
+    this.factionType = factionType;
 
     const graphics = ShapeFactory.makeCircle(radius);
     this.addChild(graphics);
