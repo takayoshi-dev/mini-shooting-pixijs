@@ -4,6 +4,9 @@ import { LayerType, FactionType } from "@/constants";
 import { Position, Vector2 } from "@/geometry";
 import { Laser } from "@/Laser";
 import { LayerManager } from "@/LayerManager";
+import type { Milliseconds } from "@/brandedTypes";
+import { BrandedCasts } from "@/brandedTypes";
+import { Timer } from "@/Timer";
 
 /**
  * 汎用的な飛行機オブジェクトを表す基底クラス
@@ -12,11 +15,8 @@ export class Plane extends RenderableEntity {
   /** 移動速度 */
   public speed: number;
 
-  /** 射撃処理を開始するまでの待機タイマー（ミリ秒） */
-  private fireCooldownTimer: number;
-
-  /** 射撃後に再度発射できるまでのクールダウン時間（ミリ秒） */
-  public readonly fireCooldownDurationMs: number = 0;
+  /** 射撃処理を開始するまでの待機タイマー*/
+  private fireCooldownTimer: Timer;
 
   /**
    * 所属陣営
@@ -60,13 +60,11 @@ export class Plane extends RenderableEntity {
     }
     super(spawnPosition, AngleUtils.calcRadians(angle), layerName);
 
-    const fireCooldownDurationMs = 500;
     this.factionType = factionType;
     this.speed = speed;
-    this.fireCooldownTimer = 0;
-    if (fireCooldownDurationMs > 0) {
-      this.fireCooldownDurationMs = fireCooldownDurationMs;
-    }
+    const fireCooldownDurationMs: Milliseconds =
+      BrandedCasts.toMilliseconds(500);
+    this.fireCooldownTimer = new Timer(fireCooldownDurationMs);
     this.score = 0;
 
     switch (factionType) {
@@ -147,25 +145,15 @@ export class Plane extends RenderableEntity {
    * @param deltaMS 前フレームからの経過時間（ミリ秒）
    */
   public updateTimers(deltaMS: number): void {
-    if (this.fireCooldownTimer > 0) {
-      this.fireCooldownTimer -= deltaMS;
-    }
-  }
-
-  /**
-   * 射撃のクールダウンタイマーが終了しているかどうかを判定する。
-   *
-   * @returns true: 射撃可能、false: クールダウン中
-   */
-  public isFireCooldownFinished(): boolean {
-    return this.fireCooldownTimer <= 0;
+    const tempDeltaMS: Milliseconds = BrandedCasts.toMilliseconds(deltaMS);
+    this.fireCooldownTimer.updateTimer(tempDeltaMS);
   }
 
   /**
    * 射撃後にクールダウンを開始する。
    */
   public startFireCooldown(): void {
-    this.fireCooldownTimer = this.fireCooldownDurationMs;
+    this.fireCooldownTimer.startTimer();
   }
 
   /**
@@ -197,7 +185,7 @@ export class Plane extends RenderableEntity {
     const trailIntervalMS = 15;
     const laserSideOffset = new Vector2(9, 9);
 
-    if (!this.isFireCooldownFinished()) {
+    if (!this.fireCooldownTimer.isTimerFinished()) {
       return;
     }
 
@@ -235,7 +223,7 @@ export class Plane extends RenderableEntity {
     const trailCount = 10;
     const trailIntervalMS = 15;
 
-    if (!this.isFireCooldownFinished()) {
+    if (!this.fireCooldownTimer.isTimerFinished()) {
       return;
     }
 

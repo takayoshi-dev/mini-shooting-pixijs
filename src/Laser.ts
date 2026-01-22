@@ -3,6 +3,9 @@ import { RenderableEntity } from "@/RenderableEntity";
 import { Position } from "@/geometry";
 import { LayerType, FactionType } from "@/constants";
 import { ShapeFactory } from "@/graphics";
+import type { Milliseconds } from "@/brandedTypes";
+import { BrandedCasts } from "@/brandedTypes";
+import { Timer } from "@/Timer";
 
 export class Laser extends RenderableEntity {
   /**
@@ -13,7 +16,7 @@ export class Laser extends RenderableEntity {
   /**
    * 移動処理を開始するまでの待機タイマー（ミリ秒）
    */
-  private movementWaitTimer: number;
+  private movementWaitTimer: Timer;
 
   /**
    * 所属陣営
@@ -46,7 +49,9 @@ export class Laser extends RenderableEntity {
       LayerType.Laser,
     );
     this.speed = initialSpeed;
-    this.movementWaitTimer = moveDelayMs;
+    this.movementWaitTimer = new Timer(
+      BrandedCasts.toMilliseconds(moveDelayMs),
+    );
     this.factionType = factionType;
 
     const graphics = ShapeFactory.makeCircle(radius);
@@ -133,9 +138,8 @@ export class Laser extends RenderableEntity {
    * @param deltaMS 前フレームからの経過時間（ミリ秒）
    */
   public updateTimers(deltaMS: number): void {
-    if (this.movementWaitTimer > 0) {
-      this.movementWaitTimer -= deltaMS;
-    }
+    const tempDeltaMS: Milliseconds = BrandedCasts.toMilliseconds(deltaMS);
+    this.movementWaitTimer.updateTimer(tempDeltaMS);
   }
 
   /**
@@ -144,6 +148,6 @@ export class Laser extends RenderableEntity {
    * @returns true: 移動可能、 false: 移動待機中
    */
   public isMovementWaitFinished(): boolean {
-    return this.movementWaitTimer <= 0;
+    return this.movementWaitTimer.isTimerFinished();
   }
 }
